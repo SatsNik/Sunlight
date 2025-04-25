@@ -1,170 +1,217 @@
 /**
- *Submitted for verification at testnet.bscscan.com on 2025-01-03
+ *Submitted for verification at testnet.bscscan.com on 2025-04-16
 */
 
 // SPDX-License-Identifier: MIT
 pragma solidity ^0.8.0;
 
 contract EnergyTrading {
-    struct User {
-        uint256 balance;
-        uint256 limit;
-        uint256 currentUsage;
+    struct BuyerHistory {
+        uint256 energybought;
+        uint256 amountpaid;
+        address seller;
+    }
+
+    struct Buyer {
+        uint256 receivedenergy;
+        uint256 remainingenergy;
+        uint256 boughtenergy;
+        uint256 totalBill;
+        uint256 totalEnergyBought;
         bool active;
         bool isReceiving;
+        bool trans;
+    }
+
+    struct Customer {
+        uint256 customertransferedenergy;
+        uint256 customerremainingenergy;
+        uint256 customerboughtenergy;
+        uint256 perunitprice;
+        address buyer;
+    }
+
+    struct Seller {
+        Customer[] livecustomers;
+        Customer[] customerhistory;
+        bool isavailable;
+        uint256 totalenergyavailable;
+        uint256 priceperunit;
+        uint256 totalSoldUnit;
+        uint256 totalEarnings;
+        uint256 totalActiveConnections;
     }
 
     struct Trade {
         address buyer;
         address seller;
         uint256 energyAmount;
-        uint256 price;
+        uint256 priceperunit;
+        uint256 totalprice;
         bool completed;
-        string deviceId;
     }
 
-    mapping(address => User) public users;
-    mapping(string => bool) public activeDevices;
+    address SunlightOwner;
+    constructor (){
+        SunlightOwner = msg.sender;
+    }
+    mapping(address => BuyerHistory[]) internal buyinghistory;
+    mapping(address => Customer[]) internal sellinghistory;
+    mapping(address => Buyer) internal buyerpage;
+    mapping(address => Seller) internal sellerpage;
+
+    address[] public AvailableSellers;
     Trade[] public trades;
 
-    address public owner;
+    event TradeCreated(uint256 indexed tradeId, address indexed seller, uint256 energyAmount, uint256 totalprice);
+    event TradeCompleted(uint256 indexed tradeId, address indexed buyer);
+    event EnergyTransferStarted(address indexed buyer, address indexed seller);
+    event EnergyTransferStopped(address indexed buyer, address indexed seller);
 
-    event TradeCreated(uint256 tradeId, address indexed seller, uint256 energyAmount, uint256 price);
-    event TradeCompleted(uint256 tradeId, address indexed buyer);
-    event LimitExceeded(address indexed user);
-    event EnergyTransferStarted(string deviceId, address indexed user);
-    event EnergyTransferStopped(string deviceId, address indexed user);
-    event UsageUpdate(address indexed user, uint256 currentUsage);
-
-    modifier onlyOwner() {
-        require(msg.sender == owner, "Only owner can perform this action");
-        _;
-    }
-
-    modifier onlyActiveUser() {
-        require(users[msg.sender].active, "User is not active");
-        _;
-    }
-
-    constructor() {
-        owner = msg.sender;
-    }
-
-    function registerUser(uint256 initialBalance, uint256 usageLimit) external {
-        require(!users[msg.sender].active, "User already registered");
-
-        users[msg.sender] = User({
-            balance: initialBalance,
-            limit: usageLimit,
-            currentUsage: 0,
+    function registerBuyer() external {
+        require(!buyerpage[msg.sender].active, "Already registered as buyer");
+        buyerpage[msg.sender] = Buyer({
+            receivedenergy: 0,
+            remainingenergy: 0,
+            boughtenergy: 0,
+            totalBill : 0,
+            totalEnergyBought : 0,
             active: true,
-            isReceiving: false
+            isReceiving: false,
+            trans : false
         });
     }
 
-    function createTrade(uint256 energyAmount, uint256 price, string calldata deviceId) external onlyActiveUser {
-        require(users[msg.sender].balance >= energyAmount, "Insufficient energy balance");
-        require(!activeDevices[deviceId], "Device is already in use");
+    function registerSeller(uint256 totalenergyAvaialble, uint256 pricePerUnit) external {
+        require(!sellerpage[msg.sender].isavailable, "Already registered as seller");
+        sellerpage[msg.sender].isavailable = true;
+        sellerpage[msg.sender].totalenergyavailable = totalenergyAvaialble;
+        sellerpage[msg.sender].priceperunit = pricePerUnit;
+        sellerpage[msg.sender].totalSoldUnit = 0;
+        sellerpage[msg.sender].totalEarnings = 0;
+        sellerpage[msg.sender].totalActiveConnections = 0;
+        AvailableSellers.push(msg.sender);
+    }
+
+    function buyEnergy(address sellerAddress, uint256 energyAmount) external payable {
+        require(buyerpage[msg.sender].active, "Register as buyer first");
+        require(sellerpage[sellerAddress].isavailable, "Seller not available");
+
+        uint256 totalCost = energyAmount * sellerpage[sellerAddress].priceperunit;
+        require(msg.value >= totalCost, "You don't have enough Amount, try reducing energyAmount");
 
         trades.push(Trade({
-            buyer: address(0),
-            seller: msg.sender,
+            buyer: msg.sender,
+            seller: sellerAddress,
             energyAmount: energyAmount,
-            price: price,
-            completed: false,
-            deviceId: deviceId
+            priceperunit: sellerpage[sellerAddress].priceperunit,
+            totalprice: totalCost,
+            completed: true
         }));
 
-        emit TradeCreated(trades.length - 1, msg.sender, energyAmount, price);
+        payable(sellerAddress).transfer(totalCost);
+
+        Buyer storage buyer = buyerpage[msg.sender];
+        Seller storage seller = sellerpage[sellerAddress];
+
+        seller.totalSoldUnit+=energyAmount;
+        seller.totalEarnings+=totalCost;
+
+        buyer.totalBill += totalCost;
+        buyer.totalEnergyBought += energyAmount;
+        buyer.receivedenergy = 0;
+        buyer.boughtenergy = energyAmount;
+        buyer.remainingenergy = energyAmount;
+        buyer.isReceiving = true;
+
+        seller.livecustomers.push(Customer({
+            customertransferedenergy: 0,
+            customerremainingenergy: energyAmount,
+            customerboughtenergy: energyAmount,
+            perunitprice: seller.priceperunit,
+            buyer: msg.sender
+        }));
+
+
+        buyer.trans = initiateEnergy();
+        seller.totalActiveConnections+=1;
+        buyinghistory[msg.sender].push(BuyerHistory({
+            energybought: energyAmount,
+            amountpaid: totalCost,
+            seller: sellerAddress
+        }));
+
+        emit TradeCreated(trades.length - 1, sellerAddress, energyAmount, totalCost);
+        emit TradeCompleted(trades.length - 1, msg.sender);
+        emit EnergyTransferStarted(msg.sender, sellerAddress);
     }
 
-    function initiateEnergyTransfer(string memory deviceId, address user) internal {
-        require(!activeDevices[deviceId], "Device is already transferring energy");
-        
-        activeDevices[deviceId] = true;
-        users[user].isReceiving = true;
-        
-        emit EnergyTransferStarted(deviceId, user);
+    function initiateEnergy() internal pure returns(bool){
+        return true;
     }
 
-    function stopEnergyTransfer(string memory deviceId, address user) internal {
-        require(activeDevices[deviceId], "Device is not transferring energy");
-        
-        activeDevices[deviceId] = false;
-        users[user].isReceiving = false;
-        
-        emit EnergyTransferStopped(deviceId, user);
-    }
+    function monitorEnergyTransfer(address buyerAddr, address sellerAddr, uint256 amount) external returns (bool) {
+    require(sellerpage[sellerAddr].isavailable, "Seller not available");
+    require(buyerpage[buyerAddr].active, "Buyer not active");
 
-    function buyEnergy(uint256 tradeId) external payable onlyActiveUser {
-        Trade storage trade = trades[tradeId];
+    buyerpage[buyerAddr].isReceiving = true;
+    buyerpage[buyerAddr].receivedenergy += amount;
+    buyerpage[buyerAddr].remainingenergy += amount;
 
-        require(!trade.completed, "Trade already completed");
-        require(msg.sender != trade.seller, "Seller cannot buy their own energy");
-        require(msg.value == trade.price, "Incorrect payment amount");
+    Seller storage seller = sellerpage[sellerAddr];
+    for (uint256 i = 0; i < seller.livecustomers.length; i++) {
+        if (seller.livecustomers[i].buyer == buyerAddr) {
+            seller.livecustomers[i].customertransferedenergy += amount;
+            seller.livecustomers[i].customerremainingenergy -= amount;
 
-        users[trade.seller].balance -= trade.energyAmount;
-        users[msg.sender].balance += trade.energyAmount;
+            if (seller.livecustomers[i].customerremainingenergy == 0) {
+                buyerpage[buyerAddr].trans = stopEnergyTransfer(buyerAddr, sellerAddr);
+                seller.customerhistory.push(seller.livecustomers[i]);
 
-        trade.buyer = msg.sender;
-        trade.completed = true;
-
-        payable(trade.seller).transfer(msg.value);
-
-        initiateEnergyTransfer(trade.deviceId, msg.sender);
-
-        emit TradeCompleted(tradeId, msg.sender);
-    }
-
-    function updateUsageAndMonitor(address user, uint256 newUsage) external onlyOwner {
-        require(users[user].active, "User is not active");
-        
-        users[user].currentUsage = newUsage;
-        emit UsageUpdate(user, newUsage);
-
-        if (newUsage >= users[user].limit) {
-            users[user].active = false;
-            
-            for (uint i = 0; i < trades.length; i++) {
-                Trade storage trade = trades[i];
-                if (trade.buyer == user && trade.completed && activeDevices[trade.deviceId]) {
-                    stopEnergyTransfer(trade.deviceId, user);
-                    break;
-                }
+                seller.livecustomers[i] = seller.livecustomers[seller.livecustomers.length - 1];
+                seller.livecustomers.pop();
+                seller.totalActiveConnections-=1;
             }
-            
-            emit LimitExceeded(user);
+
+            break;
         }
     }
 
-    function reactivateUser(address user, uint256 newLimit) external onlyOwner {
-        require(!users[user].active, "User is already active");
+    emit EnergyTransferStarted(buyerAddr, sellerAddr);
+    return true;
+}
 
-        users[user].limit = newLimit;
-        users[user].currentUsage = 0;
-        users[user].active = true;
+    function stopEnergyTransfer(address buyerAddr, address sellerAddr) internal returns (bool) {
+    require(buyerpage[buyerAddr].isReceiving, "Transfer not active");
+
+    buyerpage[buyerAddr].isReceiving = false;
+
+    emit EnergyTransferStopped(buyerAddr, sellerAddr);
+    return false;
+}
+
+
+    function myBuyingHistory() external view returns (BuyerHistory[] memory) {
+        require(buyerpage[msg.sender].active, "It's not registered buyer");
+        return buyinghistory[msg.sender];
     }
 
-    function getTrade(uint256 tradeId) external view returns (
-        address buyer,
-        address seller,
-        uint256 energyAmount,
-        uint256 price,
-        bool completed,
-        string memory deviceId
-    ) {
-        Trade memory trade = trades[tradeId];
-        return (
-            trade.buyer,
-            trade.seller,
-            trade.energyAmount,
-            trade.price,
-            trade.completed,
-            trade.deviceId
-        );
+    function mySellingHistory() external view returns (Customer[] memory) {
+        Seller storage seller = sellerpage[msg.sender];
+        require(seller.isavailable, "It's not registered seller");
+        return sellinghistory[msg.sender];
     }
 
-    function getCurrentUsage(address user) external view returns (uint256) {
-        return users[user].currentUsage;
+    function yourCurrentCustomers() external view returns (Customer[] memory) {
+        require(sellerpage[msg.sender].isavailable, "Seller not registered");
+        return sellerpage[msg.sender].livecustomers;
+    }
+
+    function UpdatePriceperUnit(uint newPrice) external { 
+        sellerpage[msg.sender].priceperunit = newPrice;
+    }
+    
+    function UpdateTotalEnergyAvailablility(uint256 total) external {
+        sellerpage[msg.sender].totalenergyavailable = total;
     }
 }
