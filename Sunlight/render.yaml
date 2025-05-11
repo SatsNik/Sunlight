@@ -1,0 +1,11 @@
+services:
+  - type: web
+    name: sunlight
+    env: python
+    buildCommand: pip install -r requirements.txt
+    startCommand: gunicorn Sunlight.Sunlight.wsgi:application
+    envVars:
+      - key: DJANGO_SETTINGS_MODULE
+        value: Sunlight.Sunlight.settings
+      - key: PYTHONPATH
+        value: /opt/render/project/src
