@@ -144,7 +144,7 @@ Manage everything, users Blockchain Registration, Wallet Connection, Energy Buyi
 # 👨‍💻 Author
 **Satyendra Shukla**  
 📧 Email: satyendrashukla381@gmail.com  
-🐙 GitHub: [DGithub](https://github.com/SatsNik)  
+🐙 GitHub: [Github](https://github.com/SatsNik)  
 🔗 LinkedIn: [Linkedin](https://www.linkedin.com/in/satyendra-shukla-858561228)
 
 # 🙏 Acknowledgments
