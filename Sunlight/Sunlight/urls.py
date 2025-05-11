@@ -22,10 +22,10 @@ from django.conf.urls.static import static
 
 urlpatterns = [
     path('admin/', admin.site.urls),
-    path('', include('home.urls')),
-    path('accounts/', include('accounts.urls')),
-    path('dashboard/', include('dashboard.urls')),
-    path('blockchain/', include('blockchain.urls')),
+    path('', include('Sunlight.home.urls')),
+    path('accounts/', include('Sunlight.accounts.urls')),
+    path('dashboard/', include('Sunlight.dashboard.urls')),
+    path('blockchain/', include('Sunlight.blockchain.urls')),
 ] 
 
 if settings.DEBUG:
