@@ -32,7 +32,7 @@ graph TD
     I --> J[BSC Testnet]
 ```
 
-✨ **Features**
+# ✨ Features
 
 👤 **User Authentication**  
 Secure registration/login  
@@ -55,7 +55,7 @@ Web3-enabled frontend
 Web3.py-enabled backend  
 All core transactions processed through smart contracts  
 
-🛠️ **Tech Stack**
+# 🛠️ Tech Stack
 
 🌐 **Frontend**  
 HTML5, CSS3  
@@ -78,7 +78,7 @@ MetaMask Wallet Integration
 SQLite (Development)  
 PostgreSQL (Production)  
 
-📂 **Project Structure**
+# 📂 Project Structure
 
 Sunlight/
 ├── accounts/                # User authentication and wallet connection
