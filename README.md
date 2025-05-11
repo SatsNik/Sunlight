@@ -32,69 +32,54 @@ graph TD
     I --> J[BSC Testnet]
 ```
 
-✨ Features
-👤 User Authentication
-Secure registration/login
+✨ **Features**
 
-Role-based access: Seller or Buyer
+👤 **User Authentication**  
+Secure registration/login  
+Role-based access: Seller or Buyer  
+Wallet connection and session management  
 
-Wallet connection and session management
+🛒 **Seller Functionality**  
+Add and manage solar panels  
+Set energy prices  
+List available energy for sale  
+Track total energy sold and consumer data  
 
-🛒 Seller Functionality
-Add and manage solar panels
+🧾 **Buyer Functionality**  
+Browse and filter listed energy  
+Buy energy directly via Web3 wallet (MetaMask)  
+View transaction history and billing  
 
-Set energy prices
+🔗 **Blockchain Integration**  
+Web3-enabled frontend  
+Web3.py-enabled backend  
+All core transactions processed through smart contracts  
 
-List available energy for sale
+🛠️ **Tech Stack**
 
-Track total energy sold and consumer data
+🌐 **Frontend**  
+HTML5, CSS3  
+JavaScript  
+Bootstrap 5  
+Web3.js  
 
-🧾 Buyer Functionality
-Browse and filter listed energy
+🧠 **Backend**  
+Python 3.8+  
+Django  
+Django REST Framework  
+Web3.py  
 
-Buy energy directly via Web3 wallet (MetaMask)
+🔗 **Blockchain**  
+Solidity Smart Contracts  
+Binance Smart Chain (Testnet)  
+MetaMask Wallet Integration  
 
-View transaction history and billing
+🗄️ **Database**  
+SQLite (Development)  
+PostgreSQL (Production)  
 
-🔗 Blockchain Integration
-Web3-enabled frontend
+📂 **Project Structure**
 
-Web3.py-enabled backend
-
-All core transactions processed through smart contracts
-
-🛠️ Tech Stack
-🌐 Frontend
-HTML5, CSS3
-
-JavaScript
-
-Bootstrap 5
-
-Web3.js
-
-🧠 Backend
-Python 3.8+
-
-Django
-
-Django REST Framework
-
-Web3.py
-
-🔗 Blockchain
-Solidity Smart Contracts
-
-Binance Smart Chain (Testnet)
-
-MetaMask Wallet Integration
-
-🗄️ Database
-SQLite (Development)
-
-PostgreSQL (Production)
-
-📂 Project Structure
 Sunlight/
 ├── accounts/                # User authentication and wallet connection
 ├── blockchain/              # Smart contract interaction logic
