@@ -93,40 +93,40 @@ Sunlight/
 ├── manage.py                # Django project management
 └── requirements.txt         # Project dependencies
 
-🚀 Getting Started
-✅ Prerequisites
+## 🚀 Getting Started
+**Prerequisites**
 Python 3.8+
 
 Node.js & npm
 
 MetaMask (with BSC Testnet configured)
 
-📥 Installation Steps
-# Clone the repository
+# Installation Steps
+**Clone the repository**
 git clone https://github.com/SatsNik/Sunlight.git
 cd Sunlight
 
-# Install Python dependencies
+**Install Python dependencies**
 pip install -r requirements.txt
 
-# Add smart contract configuration
+**Add smart contract configuration**
 export CONTRACT_ADDRESS=0x5f40beeb31d78474a33775abe9bd85574c76dafb
 export CONTRACT_ABI from here : https://testnet.bscscan.com/address/0x5f40beeb31d78474a33775abe9bd85574c76dafb
 
-# Run database migrations
+**Run database migrations**
 python manage.py migrate
 
-# Start the development server
+**Start the development server**
 python manage.py runserver
 
-📜 Smart Contract Info
+# 📜 Smart Contract Info
 Contract Address: 0x5f40beeb31d78474a33775abe9bd85574c76dafb
 
-Explorer: https://testnet.bscscan.com/
+**Explorer:** https://testnet.bscscan.com/
 
-Deployed On: Binance Smart Chain Testnet
+**Deployed On:** Binance Smart Chain Testnet
 
-Responsibilities:
+**Responsibilities:**
 
 Manage everything, users Blockchain Registration, Wallet Connection, Energy Buying, Energy Selling, Lising Available Seller, manageing history of transaction, Trades history, etc.
 
@@ -134,7 +134,7 @@ Store user energy activity
 
 Facilitate secure and transparent energy purchases
 
-🛣️ Roadmap
+# 🛣️ Roadmap
  Smart contract upgradeability
 
  Add token-based reward mechanism
@@ -145,13 +145,13 @@ Facilitate secure and transparent energy purchases
 
  Deployment on Mainnet
 
-👨‍💻 Author
+# 👨‍💻 Author
 Satyendra Shukla
 📧 Email: satyendrashukla381@gmail.com
 🐙 GitHub: https://github.com/SatsNik
 🔗 LinkedIn: https://www.linkedin.com/in/satyendra-shukla-858561228
 
-🙏 Acknowledgments
+# 🙏 Acknowledgments
 Binance Smart Chain Testnet
 
 Web3.js & Web3.py community
@@ -159,7 +159,7 @@ Web3.js & Web3.py community
 Django & DRF contributors
 
 
-🔗 Project Links
+# 🔗 Project Links
 📂 Repository: https://github.com/SatsNik/Sunlight
 
 🔍 Smart Contract: https://testnet.bscscan.com/address/0x5f40beeb31d78474a33775abe9bd85574c76dafb
