@@ -30,7 +30,7 @@ graph TD
     G --> I
     H --> I
     I --> J[BSC Testnet]
-
+```
 
 ✨ Features
 👤 User Authentication
