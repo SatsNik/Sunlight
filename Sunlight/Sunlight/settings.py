@@ -43,14 +43,14 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
-    # 'accounts',
-    # 'dashboard',
-    # 'blockchain',
-    # 'home.apps.HomeConfig',
-    'Sunlight.accounts.apps.AccountsConfig',  
-    'Sunlight.dashboard.apps.DashboardConfig',  
-    'Sunlight.blockchain.apps.BlockchainConfig',  
-    'Sunlight.home.apps.HomeConfig',
+    'accounts',
+    'dashboard',
+    'blockchain',
+    'home.apps.HomeConfig',
+    # 'Sunlight.accounts.apps.AccountsConfig',  
+    # 'Sunlight.dashboard.apps.DashboardConfig',  
+    # 'Sunlight.blockchain.apps.BlockchainConfig',  
+    # 'Sunlight.home.apps.HomeConfig',
 ]
 
 MIDDLEWARE = [
