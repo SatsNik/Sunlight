@@ -47,8 +47,6 @@ INSTALLED_APPS = [
     'Sunlight.home.apps.HomeConfig',
 ]
 
-]
-
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
