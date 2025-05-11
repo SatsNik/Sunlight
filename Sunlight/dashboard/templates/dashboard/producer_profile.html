@@ -1,0 +1,548 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<div class="profile-page-container">
+  <h1 class="profile-page-title">Producer Profile</h1>
+
+  <div class="profile-grid">
+
+    <!-- Cell 1 (Top-Left): Wallet Address -->
+    <!-- <div class="profile-card glass-card card-wallet">
+     <h2 class="card-label">Wallet Address</h2>
+      <span class="card-value-mono" id="producerAddress">{{ wallet.wallet_address }}</span>
+    </div>  -->
+
+    <!-- Cell 1 (Top-Left): Wallet Address -->
+    <!-- <div class="profile-card glass-card card-wallet">
+        <h2 class="card-label">Wallet Address</h2>
+        <span class="card-value-mono" id="producerAddress">{{ wallet.wallet_address | default:"0xPleaseConnectYourWalletToSeeAddress" }}</span>
+    </div> -->
+
+    <!-- Cell 1: Wallet Address (Updated) -->
+    <div class="profile-card glass-card card-wallet">
+        <h2 class="card-label">Wallet Address</h2>
+        <span class="card-value-mono" id="producerAddress">
+            {% if profile_address %}
+                {{ profile_address }}
+            {% elif wallet and wallet.wallet_address %}
+                {{ wallet.wallet_address }}
+            {% else %}
+                Address Unavailable
+            {% endif %}
+        </span>
+    </div>
+<!-- End of Cell 1 -->
+
+    <!-- Cell 2 (Top-Right): Buy Energy -->
+    <div class="profile-card glass-card card-buy-energy">
+      <h2 class="card-title">Buy Energy</h2>
+      <div class="form-group">
+        <input type="number" min="1" class="form-input-custom glass-input" id="energyAmount" placeholder="Energy amount (kWh)">
+        <button class="btn btn-buy-energy" id="buyEnergyBtn">Buy Energy</button>
+      </div>
+      <div id="buyEnergyAlert" class="alert-message"></div>
+    </div>
+
+    <!-- Cell 3 (Bottom-Left): Energy & Sales Stats -->
+    <!-- <div class="profile-card glass-card card-stats">
+      <div class="stats-grid">
+        <div>
+          <span class="card-label text-green">Total Energy Available</span>
+          <div class="card-value text-green"><span id="totalEnergy">Loading...</span> kWh</div>
+        </div>
+        <div>
+          <span class="card-label text-yellow">Price per Unit</span>
+          <div class="card-value text-yellow"><span id="pricePerUnit">Loading...</span> BNB</div>
+        </div>
+        <div>
+            <div>
+            <span class="card-label text-blue">Total Sales</span>
+            <div class="card-value text-blue"><span id="totalSold">Loading...</span> kWh</div>
+            </div>
+          <span class="card-label text-purple">Producer's Rating</span>
+          <div class="rating-display">
+            <span class="stars text-yellow" id="producerRatingStars"></span> <!-- Stars by JS -->
+            <!-- <span class="rating-text" id="producerRatingText">Loading...</span>
+          </div>
+        </div>
+      </div>
+    </div> -->
+
+    <div class="profile-card glass-card card-stats">
+        <div class="stats-grid">
+            <!-- Top-left -->
+            <div class="stat-box">
+            <span class="card-label text-green">Total Energy Available</span>
+            <div class="card-value text-green"><span id="totalEnergy">Loading...</span> kWh</div>
+            </div>
+        
+            <!-- Top-right -->
+            <div class="stat-box">
+            <span class="card-label text-yellow">Price per Unit</span>
+            <div class="card-value text-yellow"><span id="pricePerUnit">Loading...</span> BNB</div>
+            </div>
+        
+            <!-- Bottom-left -->
+            <div class="stat-box align-bottom">
+            <span class="card-label text-blue">Total Sales</span>
+            <div class="card-value text-blue"><span id="totalSold">Loading...</span> kWh</div>
+            </div>
+        
+            <!-- Bottom-right -->
+            <div class="stat-box">
+            <span class="card-label text-purple">Producer's Rating</span>
+            <div class="rating-display">
+                <span class="stars text-yellow" id="producerRatingStars"></span>
+                <span class="rating-text" id="producerRatingText">Loading...</span>
+            </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Cell 4 (Bottom-Right): Rate Producer -->
+    <div class="profile-card glass-card card-rate-producer">
+      <h2 class="card-title">Rate this Producer</h2>
+      <div class="rating-input-stars" id="ratingStars">
+        <i class="far fa-star rating-star" data-value="1"></i>
+        <i class="far fa-star rating-star" data-value="2"></i>
+        <i class="far fa-star rating-star" data-value="3"></i>
+        <i class="far fa-star rating-star" data-value="4"></i>
+        <i class="far fa-star rating-star" data-value="5"></i>
+      </div>
+      <div id="yourRating" class="your-rating-text"></div>
+      <button class="btn btn-rate-producer" id="rateBtn">Submit Rating</button>
+      <div id="rateAlert" class="alert-message"></div>
+    </div>
+  </div>
+</div>
+
+<!-- Ensure Font Awesome is linked for stars -->
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+
+<style>
+  /* Base Page Styles */
+  body { /* Assuming this might be in base.html, but good to ensure font */
+    font-family: 'Segoe UI', 'Roboto', Arial, sans-serif;
+    margin: 0;
+  }
+  .profile-page-container {
+    min-height: 100vh;
+    padding: 32px 16px;
+    background: linear-gradient(135deg, #e0f7fa 0%, #e8f5e9 100%); /* Light cyan to light green */
+  }
+  .profile-page-title {
+    font-size: 2.25rem; /* Tailwind text-4xl */
+    font-weight: 700; /* Tailwind bold */
+    text-align: center;
+    margin-bottom: 48px;
+    color: #2E7D32; /* Darker Green */
+    letter-spacing: 0.025em; /* Tailwind tracking-wide */
+  }
+
+  /* Profile Grid (2x2 Layout) */
+  .profile-grid {
+    max-width: 1280px; /* Tailwind max-w-7xl */
+    margin-left: auto;
+    margin-right: auto;
+    display: grid;
+    grid-template-columns: 1fr; /* Single column by default for mobile */
+    gap: 32px; /* Tailwind gap-8 */
+  }
+  @media (min-width: 768px) { /* Tailwind md breakpoint */
+    .profile-grid {
+      grid-template-columns: repeat(2, 1fr); /* Two columns for medium screens and up */
+    }
+  }
+
+  /* Card Base Styles */
+  .profile-card {
+    padding: 24px; /* Tailwind p-6 */
+    border-radius: 1.25rem; /* Tailwind rounded-2xl */
+    box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
+    transition: transform 0.3s ease-in-out;
+    min-height: 200px;
+    display: flex;
+    flex-direction: column;
+  }
+  .profile-card:hover {
+    transform: translateY(-5px);
+  }
+
+  /* Cell 1: Wallet Address Card Styling */
+.profile-card.card-wallet {
+    display: flex;
+    flex-direction: column;
+    align-items: center;  /* Horizontally centers the title and address span */
+    justify-content: center; /* Vertically centers content if card has fixed height */
+    text-align: center; /* Ensures text within children is centered */
+    padding: 25px 20px; /* Adjust padding as needed */
+}
+
+.profile-card.card-wallet .card-label { /* Styles for the "Wallet Address" title */
+    font-size: 1.3em; /* Adjust font size */
+    font-weight: 600;
+    color: #333; /* Or your preferred title color */
+    margin-bottom: 15px; /* Space between title and address */
+}
+
+.profile-card.card-wallet .card-value-mono { /* Styles for the wallet address itself */
+    font-family: 'Courier New', Courier, monospace; /* Monospaced font for addresses */
+    font-size: 1.1em; /* Adjust font size */
+    color: #555; /* Address text color */
+    background-color: rgba(255, 255, 255, 0.7); /* Light background for the placeholder look */
+    padding: 10px 15px; /* Padding inside the address placeholder */
+    border-radius: 8px; /* Rounded corners */
+    border: 1px solid rgba(0,0,0,0.1); /* Subtle border */
+    box-shadow: inset 0 1px 2px rgba(0,0,0,0.05); /* Slight inner shadow for depth */
+    display: inline-block; /* Allows padding and background to apply correctly */
+    word-break: break-all; /* Ensures long addresses wrap correctly */
+    line-height: 1.5; /* Spacing for readability */
+    min-width: 300px; /* Give it a decent minimum width */
+    max-width:108%; /* Ensure it doesn't overflow its container */
+}
+  /* Glassmorphism Card */
+  .glass-card {
+    background: rgba(255, 255, 255, 0.75); /* Adjusted opacity */
+    backdrop-filter: blur(10px);
+    -webkit-backdrop-filter: blur(10px);
+    border: 1px solid rgba(255, 255, 255, 0.3);
+  }
+  
+  .card-wallet { justify-content: center; } /* Center wallet address card content */
+
+  /* Card Content Typography */
+  .card-label {
+    font-size: 0.9rem; 
+    font-weight: 600; 
+    color: #4A5568; 
+    display: block;
+    margin-bottom: 0.3rem;
+  }
+  .card-value {
+    font-size: 1.75rem; 
+    font-weight: 700; 
+    color: #1A202C; 
+  }
+  .card-value-mono {
+    font-family: 'Roboto Mono', monospace; 
+    font-size: 0.9rem; 
+    color: #2D3748; 
+    word-break: break-all;
+  }
+  .card-title {
+    text-align: center;
+    font-size: 1.25rem; 
+    font-weight: 600; 
+    color: #2D3748; 
+    margin-bottom: 1rem;
+  }
+
+  /* Specific Text Colors */
+  .text-green { color: #166534; } /* Darker green for labels/values */
+  .text-blue { color: #1E40AF; }
+  .text-yellow { color: #B45309; }
+  .text-purple { color: #5B21B6; }
+
+  /* Stats Grid within Card 3 */
+  /* .stats-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); /* Responsive columns for stats */
+    /* gap: 16px;
+  } */ 
+
+  .stats-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  grid-template-rows: auto auto;
+  gap: 20px;
+  height: 100%; /* Ensure it fills card for vertical placement */
+}
+
+.stat-box {
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-start;
+}
+
+.stat-box.align-bottom {
+  justify-content: flex-end; /* Push Total Sales to bottom */
+}
+
+
+  .rating-display {
+    display: flex;
+    align-items: center;
+    margin-top: 0.25rem;
+  }
+  .rating-display .stars {
+    font-size: 1.5rem; /* Size for producer's average rating stars */
+    color: #FACC15; /* Yellow for stars */
+  }
+  .rating-display .rating-text {
+    margin-left: 0.5rem;
+    font-size: 1.125rem;
+    font-weight: 600;
+    color: #2D3748;
+  }
+
+
+  /* Custom Form Input */
+  .form-group {
+    display: flex;
+    flex-direction: column;
+    gap: 0.75rem; /* Space between input and button */
+  }
+  .form-input-custom {
+    width: 100%;
+    padding: 0.75rem 1rem; 
+    border-radius: 0.75rem; 
+    text-align: center;
+    font-family: 'Roboto Mono', monospace;
+    font-size: 0.875rem; 
+    box-shadow: inset 0 2px 4px 0 rgba(0, 0, 0, 0.06); 
+    transition: all 0.3s ease-in-out;
+    border: 1px solid transparent; /* Base border */
+  }
+  .glass-input {
+    background: rgba(255, 255, 255, 0.8);
+    border-color: rgba(209, 213, 219, 0.7); /* Light gray border */
+  }
+  .form-input-custom:focus {
+    outline: none;
+    border-color: #00bfae; 
+    box-shadow: 0 0 0 3px rgba(0, 191, 174, 0.3);
+  }
+
+  /* Buttons */
+  .btn {
+    color: white;
+    font-weight: 700; 
+    padding: 0.8rem 1.5rem; 
+    border-radius: 0.75rem; 
+    box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06); 
+    transition: all 0.3s ease-in-out;
+    cursor: pointer;
+    border: none;
+    text-align: center;
+  }
+  .btn-buy-energy {
+    background: linear-gradient(90deg, #00bfae 0%, #43e97b 100%); 
+  }
+  .btn-buy-energy:hover {
+    opacity: 0.9;
+    box-shadow: 0 10px 15px -3px rgba(0, 191, 174, 0.3), 0 4px 6px -2px rgba(0, 191, 174, 0.15);
+  }
+  .btn-rate-producer {
+    background-color: #2563EB; 
+  }
+  .btn-rate-producer:hover {
+    background-color: #1D4ED8; 
+    box-shadow: 0 10px 15px -3px rgba(37, 99, 235, 0.3), 0 4px 6px -2px rgba(37, 99, 235, 0.15);
+  }
+  
+  /* Rating Input Stars */
+  .card-rate-producer {
+    align-items: center; /* Center content like title, stars, button */
+  }
+  .rating-input-stars {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 0.5rem; /* Space between stars */
+    font-size: 2.25rem; /* Larger stars for rating input */
+    margin-bottom: 0.75rem;
+  }
+  .rating-star {
+    cursor: pointer;
+    transition: color 0.2s ease-in-out;
+    color: #D1D5DB; /* Default inactive star color */
+  }
+  .rating-star:hover,
+  .rating-star.selected {
+    color: #FACC15; /* Yellow for selected/hovered stars */
+  }
+  .your-rating-text {
+    text-align: center;
+    font-size: 0.875rem;
+    color: #4A5568;
+    margin-bottom: 0.75rem;
+    min-height: 1.25em; /* Reserve space */
+  }
+  
+  .alert-message {
+    margin-top: 0.75rem;
+    font-size: 0.875rem;
+    /* You'll need JS to populate this and add color classes like .text-red-500 or .text-green-500 */
+  }
+
+</style>
+
+<!-- Your existing JavaScript for fetching data and handling interactions -->
+<script id="contract-abi" type="application/json">{{ contract_abi|safe }}</script>
+<script>
+const CONTRACT_ADDRESS = '{{ contract_address }}';
+let CONTRACT_ABI = null;
+try {
+    const abiScript = document.getElementById('contract-abi');
+    if (abiScript && abiScript.textContent) {
+        CONTRACT_ABI = JSON.parse(abiScript.textContent);
+        console.log('Loaded CONTRACT_ABI:', CONTRACT_ABI);
+    } else {
+        throw new Error('ABI script tag missing or empty');
+    }
+} catch (e) {
+    console.error('Failed to parse contract ABI:', e);
+    alert('Critical error: Smart contract ABI could not be loaded. Please contact support.');
+}
+let web3;
+let contract;
+let connectedAccount = null;
+const producerAddress = '{{ profile_address }}';
+console.log('producerAddress:', producerAddress);
+if (!producerAddress) {
+    alert('Producer wallet address is missing. Cannot load blockchain data.');
+}
+
+async function initWeb3() {
+    if (!CONTRACT_ABI || !Array.isArray(CONTRACT_ABI)) {
+        alert('Smart contract ABI failed to load. Please contact support.');
+        return;
+    }
+    if (window.ethereum) {
+        web3 = new Web3(window.ethereum);
+        contract = new web3.eth.Contract(CONTRACT_ABI, CONTRACT_ADDRESS);
+        const accounts = await window.ethereum.request({ method: 'eth_accounts' });
+        if (accounts.length > 0) connectedAccount = accounts[0];
+    }
+}
+
+async function loadProducerBlockchainData() {
+    const data = await contract.methods.sellerpage(producerAddress).call();
+    console.log('sellerpage data:', data);
+    document.getElementById('totalEnergy').textContent = data.totalenergyavailable !== undefined
+        ?data.totalenergyavailable
+        : '0';
+    document.getElementById('pricePerUnit').textContent = data.priceperunit !== undefined
+        ? web3.utils.fromWei(String(data.priceperunit), 'ether')
+        : '0';
+    document.getElementById('totalSold').textContent = data.totalSoldUnit !== undefined
+        ?data.totalSoldUnit
+        : '0';
+    // Fetch and display rating from backend
+    fetch(`/dashboard/get_rating/${producerAddress}/`).then(r=>r.json()).then(d=>{
+        document.getElementById('producerRatingStars').innerHTML = '★★★★☆'; // based on rating
+        document.getElementById('producerRatingText').textContent = d.average ? d.average.toFixed(2) : 'No ratings yet';
+        highlightStarsInput(d.your_rating, false);
+    });
+}
+
+// Buy Energy
+async function buyEnergy() {
+    if (!connectedAccount) {
+        showBuyAlert('Please connect your wallet first.', 'danger');
+        return;
+    }
+    const amount = document.getElementById('energyAmount').value;
+    if (!amount || amount <= 0) {
+        showBuyAlert('Enter a valid energy amount.', 'danger');
+        return;
+    }
+    try {
+        const pricePerUnit = await contract.methods.sellerpage(producerAddress).call().then(d=>d.priceperunit);
+        console.log('amount:', amount);
+        console.log('pricePerUnit:', pricePerUnit);
+        console.log('producerAddress:', producerAddress);
+        if (pricePerUnit === undefined) {
+            showBuyAlert('Could not fetch price per unit from blockchain.', 'danger');
+            return;
+        }
+        const totalPrice = web3.utils.toBN(pricePerUnit).mul(web3.utils.toBN(amount));    
+        // console.log('totalPrice:', web3.utils.fromWei(totalPrice, 'ether'));
+        await contract.methods.buyEnergy(producerAddress, amount).send({ from: connectedAccount, value: totalPrice });
+        showBuyAlert('Purchase successful!', 'success');
+        loadProducerBlockchainData();
+    } catch (e) {
+        showBuyAlert('Transaction failed: ' + e.message, 'danger');
+    }
+}
+
+function showBuyAlert(msg, type) {
+    document.getElementById('buyEnergyAlert').innerHTML = `<div class="alert alert-${type}">${msg}</div>`;
+}
+
+// Rating
+let selectedRating = 0;
+document.addEventListener('DOMContentLoaded', async function() {
+    await initWeb3();
+    await loadProducerBlockchainData();
+    document.getElementById('buyEnergyBtn').onclick = buyEnergy;
+    // Star rating click
+    document.querySelectorAll('#ratingStars .rating-star').forEach(star => {
+        star.onmouseover = function() {
+            highlightStarsInput(this.getAttribute('data-value'), true);
+        };
+        star.onmouseout = function() {
+            highlightStarsInput(selectedRating, false);
+        };
+        star.onclick = function() {
+            selectedRating = parseInt(this.getAttribute('data-value'));
+            document.getElementById('yourRating').textContent = `You selected: ${selectedRating} star(s)`;
+            highlightStarsInput(selectedRating, false);
+        };
+    });
+    document.getElementById('rateBtn').onclick = async function() {
+        if (!selectedRating) {
+            showRateAlert('Please select a rating.', 'danger');
+            return;
+        }
+        // Save rating via backend
+        fetch(`/dashboard/rate_producer/`, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'X-CSRFToken': getCookie('csrftoken')
+            },
+            body: JSON.stringify({
+                producer: producerAddress,
+                rating: selectedRating
+            })
+        }).then(r=>r.json()).then(d=>{
+            showRateAlert(d.message, 'success');
+            loadProducerBlockchainData();
+        });
+    };
+});
+
+function highlightStarsInput(rating, isHovering) {
+    document.querySelectorAll('#ratingStars .rating-star').forEach(star => {
+        const starValue = parseInt(star.getAttribute('data-value'));
+        if (starValue <= rating) {
+            star.classList.add('selected', 'fas');
+            star.classList.remove('far');
+        } else {
+            star.classList.remove('selected', 'fas');
+            star.classList.add('far');
+        }
+    });
+}
+
+function showRateAlert(msg, type) {
+    document.getElementById('rateAlert').innerHTML = `<div class="alert alert-${type}">${msg}</div>`;
+}
+
+function getCookie(name) {
+    let cookieValue = null;
+    if (document.cookie && document.cookie !== '') {
+        const cookies = document.cookie.split(';');
+        for (let i = 0; i < cookies.length; i++) {
+            const cookie = cookies[i].trim();
+            if (cookie.substring(0, name.length + 1) === (name + '=')) {
+                cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+                break;
+            }
+        }
+    }
+    return cookieValue;
+}
+</script>
+{% endblock %} 

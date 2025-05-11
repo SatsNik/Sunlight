@@ -1,0 +1,1054 @@
+/* Main Styles for Sunlight Energy Trading Platform */
+
+:root {
+  /* Dark theme (default) color palette */
+  --primary-color: #3B82F6;  /* Bright blue */
+  --secondary-color: #10B981; /* Green - eco-friendly */
+  --accent-color: #FBBF24;    /* Solar yellow */
+  --dark-bg: #111827;         /* Deep dark for dark sections */
+  --darker-bg: #0F172A;       /* Even darker for contrast */
+  --light-bg: #F1F5F9;        /* Light gray for light sections */
+  --text-color: #F8FAFC;      /* Bright white text for dark theme */
+  --text-light: #F8FAFC;      /* Bright white text */
+  --text-dark: #1E293B;       /* Dark text */
+  --box-bg: rgba(15, 23, 42, 0.7); /* Box background for dark theme */
+  --border-color: rgba(255, 255, 255, 0.1); /* Border color for dark theme */
+  --blockchain-accent: #8B5CF6; /* Purple for blockchain elements */
+  --transition: all 0.3s ease;
+  
+  /* New gradient variables */
+  --eco-gradient: linear-gradient(135deg, #10B981 0%, #059669 100%);
+  --solar-gradient: linear-gradient(135deg, #FBBF24 0%, #F59E0B 100%);
+  --blockchain-gradient: linear-gradient(135deg, #8B5CF6 0%, #6D28D9 100%);
+  
+  /* Background pattern */
+  --bg-pattern: 
+    radial-gradient(circle at 20% 30%, rgba(59, 130, 246, 0.15) 0%, transparent 20%), 
+    radial-gradient(circle at 80% 40%, rgba(16, 185, 129, 0.15) 0%, transparent 25%),
+    radial-gradient(circle at 40% 80%, rgba(251, 191, 36, 0.15) 0%, transparent 30%),
+    linear-gradient(135deg, var(--darker-bg) 0%, var(--dark-bg) 100%);
+  
+  /* Blockchain network background pattern */
+  --blockchain-bg: 
+    repeating-linear-gradient(0deg, transparent, transparent 2px, rgba(139, 92, 246, 0.05) 2px, rgba(139, 92, 246, 0.05) 4px),
+    repeating-linear-gradient(90deg, transparent, transparent 2px, rgba(59, 130, 246, 0.05) 2px, rgba(59, 130, 246, 0.05) 4px),
+    linear-gradient(45deg, 
+      rgba(139, 92, 246, 0.01) 25%, 
+      transparent 25%, 
+      transparent 50%, 
+      rgba(59, 130, 246, 0.01) 50%, 
+      rgba(59, 130, 246, 0.01) 75%, 
+      transparent 75%, 
+      transparent);
+  
+  /* Node points pattern */
+  --node-points: 
+    radial-gradient(circle at 10% 10%, rgba(139, 92, 246, 0.4) 0.5%, transparent 1%),
+    radial-gradient(circle at 30% 25%, rgba(59, 130, 246, 0.3) 0.5%, transparent 1%),
+    radial-gradient(circle at 50% 50%, rgba(16, 185, 129, 0.3) 0.5%, transparent 1%),
+    radial-gradient(circle at 70% 75%, rgba(139, 92, 246, 0.3) 0.5%, transparent 1%),
+    radial-gradient(circle at 90% 90%, rgba(59, 130, 246, 0.4) 0.5%, transparent 1%),
+    radial-gradient(circle at 20% 60%, rgba(251, 191, 36, 0.3) 0.5%, transparent 1%),
+    radial-gradient(circle at 40% 30%, rgba(139, 92, 246, 0.4) 0.5%, transparent 1%),
+    radial-gradient(circle at 60% 80%, rgba(59, 130, 246, 0.3) 0.5%, transparent 1%),
+    radial-gradient(circle at 80% 20%, rgba(251, 191, 36, 0.3) 0.5%, transparent 1%);
+}
+
+/* Pulse animation for nodes */
+@keyframes pulse {
+  0% {
+    opacity: 0.1;
+    transform: scale(1);
+  }
+  50% {
+    opacity: 0.2;
+  }
+  100% {
+    opacity: 0.1;
+    transform: scale(1.05);
+  }
+}
+
+/* Network connection animation */
+@keyframes networkFlow {
+  0% {
+    background-position: 0% 0%;
+  }
+  100% {
+    background-position: 100% 100%;
+  }
+}
+
+/* Light (eco-friendly) theme variables */
+[data-theme="light"] {
+  --primary-color: #1D4ED8;   /* Darker blue */
+  --secondary-color: #059669; /* Darker green */
+  --accent-color: #D97706;    /* Darker amber */
+  --dark-bg: #E0F2FE;         /* Light blue bg */
+  --darker-bg: #DBEAFE;       /* Lighter blue for contrast */
+  --light-bg: #FFFFFF;        /* White */
+  --text-color: #1E293B;      /* Dark text for light theme */
+  --text-light: #1E293B;      /* Dark mode inversion */
+  --text-dark: #F8FAFC;       /* Text mode inversion */
+  --box-bg: rgba(255, 255, 255, 0.8); /* Box background for light theme */
+  --border-color: rgba(59, 130, 246, 0.2); /* Border color for light theme */
+  
+  /* Background pattern for light theme */
+  --bg-pattern: 
+    radial-gradient(circle at 20% 30%, rgba(16, 185, 129, 0.15) 0%, transparent 20%), 
+    radial-gradient(circle at 80% 40%, rgba(251, 191, 36, 0.15) 0%, transparent 25%),
+    radial-gradient(circle at 40% 80%, rgba(59, 130, 246, 0.15) 0%, transparent 30%),
+    linear-gradient(135deg, var(--darker-bg) 0%, var(--dark-bg) 100%);
+    
+  /* Override blockchain patterns for light theme */
+  --blockchain-bg: 
+    repeating-linear-gradient(0deg, transparent, transparent 5px, rgba(16, 185, 129, 0.03) 5px, rgba(16, 185, 129, 0.03) 10px),
+    repeating-linear-gradient(90deg, transparent, transparent 5px, rgba(251, 191, 36, 0.03) 5px, rgba(251, 191, 36, 0.03) 10px);
+  
+  --node-points: 
+    radial-gradient(circle at 10% 10%, rgba(16, 185, 129, 0.3) 0.5%, transparent 1%),
+    radial-gradient(circle at 30% 25%, rgba(251, 191, 36, 0.2) 0.5%, transparent 1%),
+    radial-gradient(circle at 50% 50%, rgba(59, 130, 246, 0.2) 0.5%, transparent 1%),
+    radial-gradient(circle at 70% 75%, rgba(16, 185, 129, 0.2) 0.5%, transparent 1%),
+    radial-gradient(circle at 90% 90%, rgba(251, 191, 36, 0.3) 0.5%, transparent 1%);
+}
+
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+  transition: background-color 0.5s ease, color 0.5s ease, border-color 0.5s ease, box-shadow 0.5s ease;
+}
+
+body {
+  font-family: 'Poppins', 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+  line-height: 1.6;
+  color: var(--text-color);
+  background-color: var(--dark-bg);
+  background-image: var(--bg-pattern);
+  background-attachment: fixed;
+  min-height: 100vh;
+  position: relative;
+  overflow-x: hidden;
+}
+
+/* Blockchain network background */
+body::before {
+  content: '';
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  z-index: -2;
+  background-image: var(--blockchain-bg);
+  opacity: 0.1;
+  pointer-events: none;
+}
+
+/* Animated node points */
+body::after {
+  content: '';
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  z-index: -1;
+  background-image: var(--node-points);
+  opacity: 0.15;
+  animation: pulse 4s infinite alternate;
+  pointer-events: none;
+}
+
+.container {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 0 2rem;
+}
+
+/* Header Section */
+.header {
+  background-color: var(--box-bg);
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+  color: var(--text-color);
+  padding: 1rem 0;
+  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.2);
+  position: sticky;
+  top: 0;
+  z-index: 100;
+  border-bottom: 1px solid var(--border-color);
+}
+
+.header .container {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.right-content {
+  display: flex;
+  align-items: center;
+  gap: 2rem;
+}
+
+.logo {
+  font-size: 1.8rem;
+  font-weight: 700;
+  color: var(--text-color);
+  text-decoration: none;
+  display: flex;
+  align-items: center;
+}
+
+.logo::before {
+  content: '';
+  display: inline-block;
+  width: 1.5rem;
+  height: 1.5rem;
+  background: var(--solar-gradient);
+  margin-right: 0.5rem;
+  border-radius: 50%;
+  box-shadow: 0 0 10px rgba(251, 191, 36, 0.6);
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+/* Theme toggle button */
+.theme-toggle {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  cursor: pointer;
+  user-select: none;
+}
+
+.toggle-switch {
+  position: relative;
+  width: 3.5rem;
+  height: 1.75rem;
+  background-color: var(--box-bg);
+  border: 2px solid var(--border-color);
+  border-radius: 1.75rem;
+  transition: all 0.3s ease;
+  display: flex;
+  align-items: center;
+}
+
+.toggle-switch::before {
+  content: '';
+  position: absolute;
+  left: 0.2rem;
+  width: 1.25rem;
+  height: 1.25rem;
+  background: var(--solar-gradient);
+  border-radius: 50%;
+  transition: transform 0.3s ease, background 0.3s ease;
+  box-shadow: 0 0 8px rgba(251, 191, 36, 0.6);
+}
+
+[data-theme="light"] .toggle-switch::before {
+  transform: translateX(1.75rem);
+  background: var(--eco-gradient);
+  box-shadow: 0 0 8px rgba(16, 185, 129, 0.6);
+}
+
+.toggle-label {
+  font-size: 0.9rem;
+  font-weight: 500;
+  color: var(--text-color);
+}
+
+.nav-links {
+  display: flex;
+  gap: 1.5rem;
+}
+
+.nav-links a {
+  color: var(--text-color);
+  text-decoration: none;
+  transition: var(--transition);
+  position: relative;
+  padding: 0.5rem 0;
+  margin-left: 1.5rem;
+}
+
+.nav-links a::after {
+  content: '';
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  width: 0;
+  height: 2px;
+  background: var(--eco-gradient);
+  transition: var(--transition);
+}
+
+.nav-links a:hover {
+  color: var(--accent-color);
+}
+
+.nav-links a:hover::after {
+  width: 100%;
+}
+
+.nav-links a i {
+  margin-right: 0.3rem;
+  transition: transform 0.3s ease;
+}
+
+.nav-links a:hover i {
+  transform: scale(1.2);
+}
+
+.nav-links a:first-child {
+  color: var(--blockchain-accent);
+}
+
+.nav-links a:first-child:hover {
+  color: var(--primary-color);
+}
+
+.nav-links a:last-child {
+  color: var(--secondary-color);
+}
+
+.nav-links a:last-child:hover {
+  color: var(--accent-color);
+}
+
+/* Hero Section */
+.hero {
+  padding: 8rem 0 5rem;
+  text-align: center;
+  position: relative;
+}
+
+/* Blockchain-inspired decorative elements */
+.hero::before {
+  content: '';
+  position: absolute;
+  top: 15%;
+  left: 5%;
+  width: 150px;
+  height: 150px;
+  background: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 200 200'%3E%3Cpath fill='none' stroke='rgba(139, 92, 246, 0.2)' stroke-width='1' d='M40,100 L70,60 L130,60 L160,100 L130,140 L70,140 Z'/%3E%3Cpath fill='none' stroke='rgba(139, 92, 246, 0.2)' stroke-width='1' d='M50,100 L80,70 L120,70 L150,100 L120,130 L80,130 Z'/%3E%3C/svg%3E") no-repeat center center;
+  opacity: 0.5;
+  z-index: -1;
+}
+
+.hero::after {
+  content: '';
+  position: absolute;
+  bottom: 15%;
+  right: 5%;
+  width: 150px;
+  height: 150px;
+  background: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 200 200'%3E%3Ccircle cx='100' cy='100' r='40' fill='none' stroke='rgba(16, 185, 129, 0.2)' stroke-width='1'/%3E%3Ccircle cx='100' cy='100' r='60' fill='none' stroke='rgba(16, 185, 129, 0.2)' stroke-width='1'/%3E%3C/svg%3E") no-repeat center center;
+  opacity: 0.5;
+  z-index: -1;
+}
+
+.hero h1 {
+  font-size: 3rem;
+  margin-bottom: 1rem;
+  color: var(--text-color);
+  text-shadow: 0 2px 10px rgba(59, 130, 246, 0.3);
+  position: relative;
+  display: inline-block;
+}
+
+.hero h1::after {
+  content: '';
+  position: absolute;
+  bottom: -10px;
+  left: 30%;
+  width: 40%;
+  height: 3px;
+  background: var(--blockchain-gradient);
+  border-radius: 3px;
+}
+
+.intro-box {
+  background: var(--box-bg);
+  border: 1px solid var(--border-color);
+  border-radius: 10px;
+  padding: 2.5rem;
+  margin: 3rem auto;
+  max-width: 800px;
+  box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.3);
+  backdrop-filter: blur(5px);
+  -webkit-backdrop-filter: blur(5px);
+}
+
+/* Theme change animations */
+.theme-transition {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: transparent;
+  pointer-events: none;
+  z-index: 9999;
+  opacity: 0;
+  transition: opacity 0.5s ease;
+}
+
+.theme-transition.active {
+  opacity: 1;
+}
+
+.sun-rays {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  width: 0;
+  height: 0;
+  border-radius: 50%;
+  background: var(--solar-gradient);
+  transition: width 0.8s cubic-bezier(0.34, 1.56, 0.64, 1), 
+              height 0.8s cubic-bezier(0.34, 1.56, 0.64, 1),
+              opacity 0.8s ease;
+  opacity: 0;
+  box-shadow: 0 0 50px rgba(251, 191, 36, 0.8), 
+              0 0 100px rgba(251, 191, 36, 0.4);
+}
+
+.sun-rays.active {
+  width: 300vh;
+  height: 300vh;
+  opacity: 0.8;
+}
+
+.leaves {
+  position: absolute;
+  width: 100%;
+  height: 100%;
+  pointer-events: none;
+  z-index: 100;
+  opacity: 0;
+  transition: opacity 0.5s ease;
+  overflow: hidden;
+}
+
+.leaves.active {
+  opacity: 1;
+}
+
+.leaf {
+  position: absolute;
+  width: 20px;
+  height: 20px;
+  background: var(--secondary-color);
+  mask-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='currentColor' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M11 20A7 7 0 0 1 9.8 6.1C15.5 5 17 4.48 19 2c1 2 2 4.18 2 8 0 5.5-4.78 10-10 10Z'/%3E%3Cpath d='M2 21c0-3 1.85-5.36 5.08-6C9.5 14.52 12 13 13 12'/%3E%3C/svg%3E");
+  -webkit-mask-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='currentColor' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M11 20A7 7 0 0 1 9.8 6.1C15.5 5 17 4.48 19 2c1 2 2 4.18 2 8 0 5.5-4.78 10-10 10Z'/%3E%3Cpath d='M2 21c0-3 1.85-5.36 5.08-6C9.5 14.52 12 13 13 12'/%3E%3C/svg%3E");
+  mask-size: contain;
+  -webkit-mask-size: contain;
+  mask-repeat: no-repeat;
+  -webkit-mask-repeat: no-repeat;
+  transition: transform 0.3s ease;
+}
+
+/* Blockchain network animation */
+.blockchain-network {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  pointer-events: none;
+  z-index: -3; /* Behind the other background elements */
+  opacity: 1;
+  overflow: hidden;
+}
+
+/* Network grid lines */
+.network-lines {
+  position: absolute;
+  width: 100%;
+  height: 100%;
+  background-size: 50px 50px;
+  opacity: 0.3;
+  background-image: 
+    linear-gradient(to right, rgba(139, 92, 246, 0.05) 1px, transparent 1px),
+    linear-gradient(to bottom, rgba(59, 130, 246, 0.05) 1px, transparent 1px);
+}
+
+/* Network connection lines */
+.network-lines::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-image: 
+    linear-gradient(45deg, transparent 90%, rgba(139, 92, 246, 0.1) 92%, transparent 95%),
+    linear-gradient(135deg, transparent 88%, rgba(59, 130, 246, 0.1) 90%, transparent 93%),
+    linear-gradient(225deg, transparent 85%, rgba(16, 185, 129, 0.1) 87%, transparent 90%),
+    linear-gradient(315deg, transparent 92%, rgba(251, 191, 36, 0.1) 94%, transparent 97%);
+  background-size: 100px 100px;
+  opacity: 0.6;
+  animation: networkFlow 20s linear infinite;
+}
+
+/* Network node points */
+.network-nodes {
+  position: absolute;
+  width: 100%;
+  height: 100%;
+  pointer-events: none;
+}
+
+/* Individual network node styling */
+.network-node {
+  position: absolute;
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  transform: translate(-50%, -50%);
+  z-index: 2;
+  opacity: 0;
+  animation: fadeIn 1s forwards, pulse 4s infinite alternate;
+}
+
+/* SVG connection lines */
+svg {
+  overflow: visible;
+}
+
+/* Block dots in background for additional context */
+.network-nodes::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-image: 
+    radial-gradient(circle at 25% 25%, rgba(139, 92, 246, 0.3) 0.5%, transparent 0.6%),
+    radial-gradient(circle at 75% 75%, rgba(59, 130, 246, 0.3) 0.5%, transparent 0.6%),
+    radial-gradient(circle at 25% 75%, rgba(16, 185, 129, 0.3) 0.5%, transparent 0.6%),
+    radial-gradient(circle at 75% 25%, rgba(251, 191, 36, 0.3) 0.5%, transparent 0.6%),
+    radial-gradient(circle at 50% 50%, rgba(139, 92, 246, 0.3) 0.5%, transparent 0.6%),
+    radial-gradient(circle at 15% 35%, rgba(59, 130, 246, 0.2) 0.4%, transparent 0.5%),
+    radial-gradient(circle at 85% 15%, rgba(16, 185, 129, 0.2) 0.4%, transparent 0.5%),
+    radial-gradient(circle at 35% 85%, rgba(251, 191, 36, 0.2) 0.4%, transparent 0.5%),
+    radial-gradient(circle at 65% 65%, rgba(139, 92, 246, 0.2) 0.4%, transparent 0.5%);
+  pointer-events: none;
+  opacity: 0.6;
+}
+
+/* Light theme adjustments for blockchain network */
+[data-theme="light"] .network-lines {
+  background-image: 
+    linear-gradient(to right, rgba(16, 185, 129, 0.05) 1px, transparent 1px),
+    linear-gradient(to bottom, rgba(251, 191, 36, 0.05) 1px, transparent 1px);
+  opacity: 0.2;
+}
+
+[data-theme="light"] .network-lines::before {
+  background-image: 
+    linear-gradient(45deg, transparent 90%, rgba(16, 185, 129, 0.08) 92%, transparent 95%),
+    linear-gradient(135deg, transparent 88%, rgba(251, 191, 36, 0.08) 90%, transparent 93%),
+    linear-gradient(225deg, transparent 85%, rgba(59, 130, 246, 0.08) 87%, transparent 90%),
+    linear-gradient(315deg, transparent 92%, rgba(16, 185, 129, 0.08) 94%, transparent 97%);
+  opacity: 0.4;
+}
+
+[data-theme="light"] .network-nodes {
+  background-image: 
+    radial-gradient(circle at 25% 25%, rgba(16, 185, 129, 0.3) 0.5%, transparent 0.6%),
+    radial-gradient(circle at 75% 75%, rgba(251, 191, 36, 0.3) 0.5%, transparent 0.6%),
+    radial-gradient(circle at 25% 75%, rgba(59, 130, 246, 0.3) 0.5%, transparent 0.6%),
+    radial-gradient(circle at 75% 25%, rgba(16, 185, 129, 0.3) 0.5%, transparent 0.6%),
+    radial-gradient(circle at 50% 50%, rgba(251, 191, 36, 0.3) 0.5%, transparent 0.6%),
+    radial-gradient(circle at 15% 35%, rgba(16, 185, 129, 0.25) 0.4%, transparent 0.5%),
+    radial-gradient(circle at 85% 15%, rgba(59, 130, 246, 0.25) 0.4%, transparent 0.5%),
+    radial-gradient(circle at 35% 85%, rgba(251, 191, 36, 0.25) 0.4%, transparent 0.5%),
+    radial-gradient(circle at 65% 65%, rgba(16, 185, 129, 0.25) 0.4%, transparent 0.5%);
+}
+
+/* Profile Section */
+.profile {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 2.5rem;
+  margin: 4rem 0;
+  position: relative
+}
+
+/* Solar-system inspired orbit effect */
+.profile::before {
+  content: '';
+  position: absolute;
+  width: 260px;
+  height: 260px;
+  border: 1px dashed rgba(251, 191, 36, 0.3);
+  border-radius: 50%;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  animation: rotate 40s linear infinite;
+  z-index: -1;
+}
+
+.profile::after {
+  content: '';
+  position: absolute;
+  width: 300px;
+  height: 300px;
+  border: 1px dashed rgba(16, 185, 129, 0.2);
+  border-radius: 50%;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  animation: rotate-reverse 60s linear infinite;
+  z-index: -1;
+}
+
+@keyframes rotate {
+  from { transform: translate(-50%, -50%) rotate(0deg); }
+  to { transform: translate(-50%, -50%) rotate(360deg); }
+}
+
+@keyframes rotate-reverse {
+  from { transform: translate(-50%, -50%) rotate(360deg); }
+  to { transform: translate(-50%, -50%) rotate(0deg); }
+}
+
+/* Animation for elements fading in */
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(20px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+/* Apply fade-in animation to animated elements */
+.tech-item, .profile-img, .intro-box, .welcome-heading {
+  opacity: 0;
+}
+
+.animate {
+  animation: fadeIn 0.8s ease forwards;
+}
+
+/* Subtle pulsing glow animation for the call-to-action button */
+@keyframes pulseGlow {
+  0% { box-shadow: 0 0 5px rgba(59, 130, 246, 0.3); }
+  50% { box-shadow: 0 0 15px rgba(59, 130, 246, 0.6); }
+  100% { box-shadow: 0 0 5px rgba(59, 130, 246, 0.3); }
+}
+
+.btn-primary {
+  animation: pulseGlow 3s infinite;
+}
+
+.profile-img {
+  width: 200px;
+  height: 200px;
+  border-radius: 50%;
+  object-fit: cover;
+  border: 3px solid transparent;
+  background: linear-gradient(var(--dark-bg), var(--dark-bg)) padding-box,
+              var(--blockchain-gradient) border-box;
+  box-shadow: 
+    0 10px 25px -5px rgba(0, 0, 0, 0.3),
+    0 0 20px rgba(139, 92, 246, 0.4);
+  transition: var(--transition);
+  position: relative;
+  z-index: 1;
+}
+
+.profile-img:hover {
+  transform: scale(1.03);
+  box-shadow: 
+    0 20px 25px -5px rgba(0, 0, 0, 0.3),
+    0 0 30px rgba(139, 92, 246, 0.6);
+}
+
+.profile-text {
+  text-align: center;
+  background: var(--box-bg);
+  padding: 1.5rem 2rem;
+  border-radius: 10px;
+  border: 1px solid var(--border-color);
+  backdrop-filter: blur(5px);
+  -webkit-backdrop-filter: blur(5px);
+}
+
+.profile-text h2 {
+  color: var(--text-color);
+  margin-bottom: 0.5rem;
+  position: relative;
+  display: inline-block;
+  font-weight: 600;
+}
+
+.profile-text h2::after {
+  content: '';
+  position: absolute;
+  bottom: -5px;
+  left: 25%;
+  width: 50%;
+  height: 2px;
+  background: var(--eco-gradient);
+  border-radius: 2px;
+}
+
+.social-links {
+  display: flex;
+  gap: 1.2rem;
+  margin-top: 1.5rem;
+  justify-content: center;
+}
+
+.social-links a {
+  color: var(--text-color);
+  font-size: 1.5rem;
+  transition: var(--transition);
+  width: 2.5rem;
+  height: 2.5rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.05);
+  border: 1px solid var(--border-color);
+}
+
+.social-links a:nth-child(1):hover {
+  color: #0077B5; /* LinkedIn blue */
+  box-shadow: 0 0 15px rgba(0, 119, 181, 0.5);
+  transform: translateY(-3px);
+}
+
+.social-links a:nth-child(2):hover {
+  color: #6e5494; /* GitHub purple */
+  box-shadow: 0 0 15px rgba(110, 84, 148, 0.5);
+  transform: translateY(-3px);
+}
+
+.social-links a:nth-child(3):hover {
+  color: #1DA1F2; /* Twitter blue */
+  box-shadow: 0 0 15px rgba(29, 161, 242, 0.5);
+  transform: translateY(-3px);
+}
+
+/* Intro Section */
+.intro-text {
+  margin: 4rem 0 3rem;
+  text-align: center;
+  position: relative;
+  padding: 2.5rem;
+  background: var(--box-bg);
+  border-radius: 10px;
+  border: 1px solid var(--border-color);
+  box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.2);
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+}
+
+/* Blockchain chain decorative elements */
+.intro-text::before {
+  content: '';
+  position: absolute;
+  top: -10px;
+  left: 20px;
+  right: 20px;
+  height: 5px;
+  background: var(--blockchain-gradient);
+  border-radius: 5px 5px 0 0;
+  opacity: 0.7;
+}
+
+.intro-text::after {
+  content: '';
+  position: absolute;
+  bottom: -2px;
+  left: calc(50% - 150px);
+  width: 300px;
+  height: 2px;
+  background: linear-gradient(90deg, 
+    transparent 0%, 
+    rgba(16, 185, 129, 0.3) 20%, 
+    rgba(16, 185, 129, 0.5) 50%, 
+    rgba(16, 185, 129, 0.3) 80%, 
+    transparent 100%);
+}
+
+.welcome-heading {
+  font-size: 2.8rem;
+  background: var(--blockchain-gradient);
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+  margin-bottom: 1.5rem;
+  text-shadow: 0 2px 10px rgba(139, 92, 246, 0.3);
+  font-weight: 700;
+  letter-spacing: 3px;
+  text-transform: uppercase;
+}
+
+.intro-text p {
+  font-size: 1.2rem;
+  line-height: 1.8;
+  color: var(--text-color);
+  margin-bottom: 1.5rem;
+  max-width: 90%;
+  margin-left: auto;
+  margin-right: auto;
+}
+
+.btn-primary {
+  display: inline-block;
+  background: var(--blockchain-gradient);
+  color: var(--text-light);
+  padding: 1rem 2.8rem;
+  border-radius: 50px;
+  text-decoration: none;
+  font-weight: 700;
+  font-size: 1.1rem;
+  margin-top: 2rem;
+  transition: all 0.3s ease;
+  border: none;
+  cursor: pointer;
+  position: relative;
+  overflow: hidden;
+  z-index: 1;
+  box-shadow: 0 4px 15px rgba(139, 92, 246, 0.4);
+  letter-spacing: 1px;
+  text-transform: uppercase;
+}
+
+.btn-primary::before {
+  content: '';
+  position: absolute;
+  top: -2px;
+  left: -2px;
+  right: -2px;
+  bottom: -2px;
+  background: var(--solar-gradient);
+  z-index: -1;
+  opacity: 0;
+  transition: all 0.4s ease;
+  border-radius: 52px;
+}
+
+.btn-primary:hover::before {
+  opacity: 0.5;
+  top: -4px;
+  left: -4px;
+  right: -4px;
+  bottom: -4px;
+}
+
+.btn-primary:hover {
+  color: white;
+  transform: translateY(-5px) scale(1.03);
+  background: var(--solar-gradient);
+  box-shadow: 0 12px 25px -5px rgba(251, 191, 36, 0.5);
+}
+
+/* Tech Stack Section */
+.tech-stack {
+  background: var(--box-bg);
+  border: 1px solid var(--border-color);
+  padding: 3.5rem 2.5rem;
+  border-radius: 15px;
+  box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.3);
+  margin: 5rem auto;
+  max-width: 900px;
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+  position: relative;
+  overflow: hidden;
+}
+
+/* Decorative block pattern for blockchain theme */
+.tech-stack::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-image: 
+    linear-gradient(rgba(139, 92, 246, 0.05) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(139, 92, 246, 0.05) 1px, transparent 1px);
+  background-size: 20px 20px;
+  z-index: -1;
+}
+
+.tech-stack h3 {
+  text-align: center;
+  margin-bottom: 3rem;
+  color: var(--text-color);
+  font-size: 2rem;
+  position: relative;
+  padding-bottom: 1rem;
+}
+
+.tech-stack h3::after {
+  content: '';
+  position: absolute;
+  bottom: 0;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 50px;
+  height: 3px;
+  background: var(--solar-gradient);
+  border-radius: 3px;
+}
+
+.tech-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+  gap: 2rem;
+}
+
+.tech-item {
+  background: rgba(255, 255, 255, 0.04);
+  padding: 1.5rem;
+  border-radius: 10px;
+  text-align: center;
+  transition: var(--transition);
+  border: 1px solid rgba(255, 255, 255, 0.05);
+  position: relative;
+  overflow: hidden;
+}
+
+.tech-item::before {
+  content: '';
+  position: absolute;
+  top: -2px;
+  left: -2px;
+  width: calc(100% + 4px);
+  height: calc(100% + 4px);
+  background: linear-gradient(45deg, 
+    var(--blockchain-accent), 
+    var(--primary-color), 
+    var(--secondary-color), 
+    var(--accent-color));
+  z-index: -1;
+  border-radius: 12px;
+  opacity: 0;
+  transition: opacity 0.3s ease;
+}
+
+.tech-item:hover {
+  transform: translateY(-8px);
+  box-shadow: 0 15px 30px rgba(0, 0, 0, 0.2);
+}
+
+.tech-item:hover::before {
+  opacity: 1;
+}
+
+.tech-item h4 {
+  margin: 0.8rem 0;
+  color: var(--accent-color);
+  font-weight: 600;
+}
+
+.tech-item p {
+  font-size: 0.9rem;
+  color: var(--text-color);
+  opacity: 0.8;
+}
+
+/* Footer Section */
+.footer {
+  background: linear-gradient(0deg, var(--darker-bg) 0%, transparent 100%);
+  color: var(--text-light);
+  padding: 2.5rem 0;
+  margin-top: 5rem;
+  text-align: center;
+  border-top: 1px solid rgba(255, 255, 255, 0.05);
+}
+
+.footer p {
+  opacity: 0.7;
+}
+
+.footer p:first-child {
+  margin-bottom: 0.8rem;
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+  .hero h1 {
+    font-size: 2.5rem;
+  }
+  
+  .hero::before, .hero::after {
+    width: 100px;
+    height: 100px;
+  }
+  
+  .welcome-heading {
+    font-size: 2rem;
+  }
+  
+  .tech-grid {
+    grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+    gap: 1.5rem;
+  }
+  
+  .profile::before {
+    width: 220px;
+    height: 220px;
+  }
+  
+  .profile::after {
+    width: 260px;
+    height: 260px;
+  }
+  
+  .right-content {
+    gap: 1rem;
+  }
+  
+  .toggle-label {
+    display: none;
+  }
+}
+
+@media (max-width: 576px) {
+  .container {
+    padding: 0 1.2rem;
+  }
+  
+  .hero h1 {
+    font-size: 1.8rem;
+  }
+  
+  .welcome-heading {
+    font-size: 1.6rem;
+  }
+  
+  .profile-img {
+    width: 160px;
+    height: 160px;
+  }
+  
+  .tech-grid {
+    grid-template-columns: repeat(1, 1fr);
+  }
+  
+  .profile::before {
+    width: 180px;
+    height: 180px;
+  }
+  
+  .profile::after {
+    width: 220px;
+    height: 220px;
+  }
+  
+  .btn-primary {
+    padding: 0.8rem 2rem;
+  }
+}

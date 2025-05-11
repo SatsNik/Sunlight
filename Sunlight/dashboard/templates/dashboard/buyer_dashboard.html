@@ -1,0 +1,810 @@
+{% extends 'base.html' %}
+{% block content %}
+<link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+<style>
+    body {
+        font-family: 'Segoe UI', 'Roboto', Arial, sans-serif;
+        background: linear-gradient(135deg, #e8f5e9 0%, #e0f7fa 100%);
+    }
+    .glass {
+        background: rgba(255, 255, 255, 0.38);
+        box-shadow: 0 8px 32px 0 rgba(31, 38, 135, 0.18);
+        backdrop-filter: blur(14px);
+        -webkit-backdrop-filter: blur(14px);
+        border-radius: 18px;
+        border: 2px solid rgba(0,191,174,0.18);
+    }
+    .glass-green {
+        border: 2px solid #43e97b55;
+    }
+    .glass-blue {
+        border: 2px solid #00bfae55;
+    }
+    .glass-yellow {
+        border: 2px solid #ffe06655;
+    }
+    .sunlight-gradient {
+        background: linear-gradient(90deg, #00bfae 0%, #43e97b 100%);
+    }
+    .blockchain-accent {
+        color: #00bfae;
+    }
+    .dashboard-card {
+        background: #fff;
+        border-radius: 16px;
+        box-shadow: 0 4px 24px rgba(76, 175, 80, 0.08), 0 1.5px 6px rgba(0, 150, 136, 0.08);
+        border: 1.5px solid #b2dfdb;
+        padding: 1.5rem 1.2rem 1.2rem 1.2rem;
+        margin-bottom: 1.5rem;
+    }
+    .dashboard-title {
+        color: #388e3c;
+        font-weight: 700;
+        letter-spacing: 1px;
+        text-align: center;
+        margin-bottom: 1.5rem;
+    }
+    .btn-blockchain {
+        background: linear-gradient(90deg, #00bfae 0%, #43e97b 100%);
+        color: #fff;
+        border: none;
+        font-weight: 600;
+        box-shadow: 0 2px 8px rgba(0, 150, 136, 0.12);
+    }
+    .btn-blockchain:hover {
+        background: linear-gradient(90deg, #43e97b 0%, #00bfae 100%);
+        color: #fff;
+    }
+    .table thead th {
+        background: #e0f2f1;
+        color: #00695c;
+        font-weight: 600;
+    }
+    .table-striped>tbody>tr:nth-of-type(odd) {
+        background-color: #f1f8e9;
+    }
+    .modal-content {
+        border-radius: 14px;
+        border: 1.5px solid #b2dfdb;
+    }
+    .dashboard-highlight {
+        color: #00bfae;
+        font-weight: 600;
+    }
+    .spinner-overlay {
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background: rgba(0, 0, 0, 0.5);
+        display: none;
+        justify-content: center;
+        align-items: center;
+        z-index: 9999;
+    }
+    .spinner-container {
+        background: white;
+        padding: 2rem;
+        border-radius: 8px;
+        text-align: center;
+    }
+    .spinner-border {
+        width: 3rem;
+        height: 3rem;
+    }
+    .clickable-link {
+    color: #0d6efd;
+    text-decoration: none;
+    cursor: pointer;
+    align-items: center;
+    }
+    .clickable-link:hover {
+        text-decoration: underline;
+    }
+</style>
+
+{% if messages %}
+    {% for message in messages %}
+        <div class="bg-green-100 border border-green-400 text-green-700 px-4 py-3 rounded relative mb-4" role="alert">{{ message }}</div>
+    {% endfor %}
+{% endif %}
+
+<div id="walletAlert"></div>
+<!-- <div class="d-flex justify-content-between align-items-center mb-3">
+    <h4>Consumer Dashboard</h4>
+    <a href="{% url 'logout' %}" class="btn btn-secondary">Logout</a>
+</div> -->
+
+<div class="fixed inset-0 -z-10 pointer-events-none">
+  <svg width="100%" height="100%">
+    <!-- Sunlight circle -->
+    <circle cx="12%" cy="18%" r="90" fill="#ffe06633"/>
+    <!-- Blockchain hexagons -->
+    <polygon points="300,120 320,135 320,165 300,180 280,165 280,135" fill="#00bfae22"/>
+    <polygon points="70,400 90,415 90,445 70,460 50,445 50,415" fill="#43e97b22"/>
+    <!-- Blue circuit line -->
+    <rect x="60%" y="10%" width="2" height="400" fill="#2196f333"/>
+    <!-- Subtle chain link -->
+    <ellipse cx="80%" cy="80%" rx="60" ry="20" fill="#00bfae22"/>
+    <!-- More subtle elements as needed -->
+  </svg>
+</div>
+
+<div class="flex flex-wrap items-center justify-between p-4 mb-6 sunlight-gradient glass shadow-lg">
+  <h2 class="text-white font-bold text-2xl">Consumer Dashboard</h2>
+  <div class="flex gap-2">
+    <button class="bg-white text-green-700 font-semibold py-2 px-4 rounded-lg shadow hover:bg-green-100 transition" data-bs-toggle="modal" data-bs-target="#profileModal">My Profile</button>
+    <a href="https://testnet.bscscan.com/address/0x5f40beeb31d78474a33775abe9bd85574c76dafb#code" target="_blank" class="bg-white text-blue-600 font-semibold py-2 px-4 rounded-lg shadow hover:bg-blue-50 transition">Blockchain</a>
+    <button class="bg-white text-gray-700 font-semibold py-2 px-4 rounded-lg shadow hover:bg-gray-100 transition" id="connectWallet">Connect</button>
+    <button class="bg-red-500 text-white font-semibold py-2 px-4 rounded-lg shadow hover:bg-red-600 transition" id="disconnectWallet" style="display:none;">Disconnect</button>
+    <a href="{% url 'logout' %}" class="bg-gray-700 text-white font-semibold py-2 px-4 rounded-lg shadow hover:bg-gray-800 transition">Logout</a>
+  </div>
+</div>
+
+<div class="flex justify-center my-4">
+  <input
+    type="text"
+    class="form-control glass px-4 py-2 rounded-full text-center font-mono text-base shadow transition-all duration-300"
+    id="wallet_address"
+    placeholder="Your Wallet Address (auto-filled after connect)"
+    readonly
+    style="width: auto; min-width: 320px; max-width: 100%;"
+  >
+</div>
+
+<div class="flex flex-col items-center justify-center mb-8">
+  <div id="registrationStatus" class="glass glass-yellow flex items-center gap-4 px-6 py-3 rounded-xl mb-4 shadow-lg">
+    <span id="registrationBadge" class="badge px-4 py-1 rounded-full font-semibold text-base shadow glass transition-all duration-300">
+      Not Registered
+    </span>
+  </div>
+  <button id="registerBtn" class="sunlight-gradient text-white font-bold py-3 px-8 rounded-xl shadow-lg text-lg transition-all duration-300 hover:bg-green-100 hover:text-green-800" style="display:none;">
+    Register on Blockchain
+  </button>
+</div>
+
+<div class="flex flex-wrap gap-8 justify-center mb-8">
+  <div class="glass glass-green p-6 mb-6 min-w-[320px]">
+    <h6 class="text-green-700 font-bold mb-2">Total Bought Unit</h6>
+    <div class="text-2xl font-semibold text-green-800" id="totalBought">0 kWh</div>
+  </div>
+  <div class="glass glass-blue p-6 mb-6 min-w-[320px]">
+    <h6 class="text-blue-700 font-bold mb-2">Total Bill Amount</h6>
+    <div class="text-2xl font-semibold text-blue-800" id="totalBill">0 BNB</div>
+  </div>
+</div>
+
+<div class="flex flex-wrap justify-center gap-6 mb-8">
+  <button class="sunlight-gradient text-white font-semibold py-2 px-6 rounded-lg shadow hover:bg-green-100 hover:text-green-800 transition" id="viewSellersBtn">View Available Sellers</button>
+  <button class="sunlight-gradient text-white font-semibold py-2 px-6 rounded-lg shadow hover:bg-green-100 hover:text-green-800 transition" id="viewBuyingHistoryBtn">Your Buying History</button>
+  <button class="sunlight-gradient text-white font-semibold py-2 px-6 rounded-lg shadow hover:bg-green-100 hover:text-green-800 transition" id="viewTradesHistoryBtn">Sunlight Trades History</button>
+</div>
+
+<!-- Sellers Modal -->
+<div class="modal fade" id="sellersModal" tabindex="-1" aria-labelledby="sellersModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content glass glass-yellow">
+            <div class="modal-header">
+                <h5 class="modal-title" id="sellersModalLabel">Available Sellers</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <div class="overflow-x-auto">
+                    <table class="min-w-full divide-y divide-green-200">
+                        <thead class="bg-green-50">
+                            <tr>
+                                <th class="px-6 py-3 text-left text-xs font-medium text-green-700 uppercase tracking-wider">Seller Address</th>
+                            </tr>
+                        </thead>
+                        <tbody id="sellersTableBody" class="bg-white divide-y divide-green-100">
+                            <tr><td>No sellers available</td></tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Buying History Modal -->
+<div class="modal fade" id="buyingHistoryModal" tabindex="-1" aria-labelledby="buyingHistoryModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content glass glass-yellow">
+            <div class="modal-header">
+                <h5 class="modal-title" id="buyingHistoryModalLabel">Your Buying History</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <div class="overflow-x-auto">
+                    <table class="min-w-full divide-y divide-green-200">
+                        <thead class="bg-green-50">
+                            <tr>
+                                <th class="px-6 py-3 text-left text-xs font-medium text-green-700 uppercase tracking-wider">Energy Bought (kWh)</th>
+                                <th class="px-6 py-3 text-left text-xs font-medium text-green-700 uppercase tracking-wider">Amount Paid (BNB)</th>
+                                <th class="px-6 py-3 text-left text-xs font-medium text-green-700 uppercase tracking-wider">Seller Address</th>
+                            </tr>
+                        </thead>
+                        <tbody id="buyingHistoryTableBody" class="bg-white divide-y divide-green-100">
+                            <tr><td colspan="3">No buying history available</td></tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Trades History Modal -->
+<div class="modal fade" id="tradesHistoryModal" tabindex="-1" aria-labelledby="tradesHistoryModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-xl">
+        <div class="modal-content glass glass-yellow">
+            <div class="modal-header">
+                <h5 class="modal-title" id="tradesHistoryModalLabel">Sunlight Trades History</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <div class="overflow-x-auto">
+                    <table class="min-w-full divide-y divide-green-200">
+                        <thead class="bg-green-50">
+                            <tr>
+                                <th class="px-6 py-3 text-left text-xs font-medium text-green-700 uppercase tracking-wider">Sr No</th>
+                                <th class="px-6 py-3 text-left text-xs font-medium text-green-700 uppercase tracking-wider">Consumer</th>
+                                <th class="px-6 py-3 text-left text-xs font-medium text-green-700 uppercase tracking-wider">Producer</th>
+                                <th class="px-6 py-3 text-left text-xs font-medium text-green-700 uppercase tracking-wider">Energy (kWh)</th>
+                                <th class="px-6 py-3 text-left text-xs font-medium text-green-700 uppercase tracking-wider">Price/kWh (BNB)</th>
+                                <th class="px-6 py-3 text-left text-xs font-medium text-green-700 uppercase tracking-wider">Total Bill (BNB)</th>
+                            </tr>
+                        </thead>
+                        <tbody id="tradesHistoryTableBody" class="bg-white divide-y divide-green-100">
+                            <tr><td colspan="6">No trades history available</td></tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Profile Modal -->
+<!-- Profile Modal -->
+<div class="modal fade" id="profileModal" tabindex="-1" aria-labelledby="profileModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content glass glass-yellow">
+            <div class="modal-header">
+                <h5 class="modal-title" id="profileModalLabel">My Profile</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <div class="mb-3">
+                    <label class="form-label">Username</label>
+                    <input type="text" class="form-control" value="{{ user.username }}" readonly>
+                </div>
+                <div class="mb-3">
+                    <label class="form-label">Email</label>
+                    <input type="email" class="form-control" value="{{ user.email }}" readonly>
+                </div>
+                <div class="mb-3">
+                    <label class="form-label">First Name</label>
+                    <input type="text" class="form-control" value="{{ user.first_name|default:'' }}" readonly>
+                </div>
+                <div class="mb-3">
+                    <label class="form-label">Last Name</label>
+                    <input type="text" class="form-control" value="{{ user.last_name|default:'' }}" readonly>
+                </div>
+                <div class="mb-3">
+                    <label class="form-label">Home Address</label>
+                    <div class="input-group mb-2">
+                        <input type="text" class="form-control" id="addressLine1" value="{{ user.profile.address_line1|default:'' }}" readonly>
+                        <button class="btn btn-outline-secondary" type="button" id="editAddressBtn">Edit</button>
+                    </div>
+                    <div class="input-group mb-2">
+                        <input type="text" class="form-control" id="districtState" value="{{ user.profile.district_state|default:'' }}" readonly>
+                    </div>
+                    <div class="input-group mb-2">
+                        <input type="text" class="form-control" id="country" value="{{ user.profile.country|default:'' }}" readonly>
+                    </div>
+                    <div class="input-group mb-2">
+                        <input type="text" class="form-control" id="pincode" value="{{ user.profile.pincode|default:'' }}" readonly>
+                    </div>
+                </div>
+                <input id="profileWalletAddress" ...>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="spinner-overlay" id="loadingSpinner">
+    <div class="spinner-container">
+        <div class="spinner-border text-primary" role="status">
+            <span class="visually-hidden">Loading...</span>
+        </div>
+        <div class="mt-2" id="loadingText">Processing...</div>
+    </div>
+</div>
+
+<!-- Add Web3.js -->
+<script src="https://cdn.jsdelivr.net/npm/web3@1.5.2/dist/web3.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/bn.js@4.11.8/lib/bn.js"></script>
+<!-- Add Bootstrap JS -->
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js"></script>
+<script>
+
+// Contract configuration
+const CONTRACT_ADDRESS = '0x5F40bEeb31D78474a33775Abe9Bd85574C76dafB';
+const CONTRACT_ABI = [{"inputs":[],"stateMutability":"nonpayable","type":"constructor"},{"anonymous":false,"inputs":[{"indexed":true,"internalType":"address","name":"buyer","type":"address"},{"indexed":true,"internalType":"address","name":"seller","type":"address"}],"name":"EnergyTransferStarted","type":"event"},{"anonymous":false,"inputs":[{"indexed":true,"internalType":"address","name":"buyer","type":"address"},{"indexed":true,"internalType":"address","name":"seller","type":"address"}],"name":"EnergyTransferStopped","type":"event"},{"anonymous":false,"inputs":[{"indexed":true,"internalType":"uint256","name":"tradeId","type":"uint256"},{"indexed":true,"internalType":"address","name":"buyer","type":"address"}],"name":"TradeCompleted","type":"event"},{"anonymous":false,"inputs":[{"indexed":true,"internalType":"uint256","name":"tradeId","type":"uint256"},{"indexed":true,"internalType":"address","name":"seller","type":"address"},{"indexed":false,"internalType":"uint256","name":"energyAmount","type":"uint256"},{"indexed":false,"internalType":"uint256","name":"totalprice","type":"uint256"}],"name":"TradeCreated","type":"event"},{"inputs":[{"internalType":"uint256","name":"","type":"uint256"}],"name":"AvailableSellers","outputs":[{"internalType":"address","name":"","type":"address"}],"stateMutability":"view","type":"function"},{"inputs":[{"internalType":"uint256","name":"newPrice","type":"uint256"}],"name":"UpdatePriceperUnit","outputs":[],"stateMutability":"nonpayable","type":"function"},{"inputs":[{"internalType":"uint256","name":"total","type":"uint256"}],"name":"UpdateTotalEnergyAvailablility","outputs":[],"stateMutability":"nonpayable","type":"function"},{"inputs":[{"internalType":"address","name":"sellerAddress","type":"address"},{"internalType":"uint256","name":"energyAmount","type":"uint256"}],"name":"buyEnergy","outputs":[],"stateMutability":"payable","type":"function"},{"inputs":[{"internalType":"address","name":"","type":"address"}],"name":"buyerpage","outputs":[{"internalType":"uint256","name":"receivedenergy","type":"uint256"},{"internalType":"uint256","name":"remainingenergy","type":"uint256"},{"internalType":"uint256","name":"boughtenergy","type":"uint256"},{"internalType":"uint256","name":"totalBill","type":"uint256"},{"internalType":"uint256","name":"totalEnergyBought","type":"uint256"},{"internalType":"bool","name":"active","type":"bool"},{"internalType":"bool","name":"isReceiving","type":"bool"},{"internalType":"bool","name":"trans","type":"bool"}],"stateMutability":"view","type":"function"},{"inputs":[{"internalType":"address","name":"","type":"address"},{"internalType":"uint256","name":"","type":"uint256"}],"name":"buyinghistory","outputs":[{"internalType":"uint256","name":"energybought","type":"uint256"},{"internalType":"uint256","name":"amountpaid","type":"uint256"},{"internalType":"address","name":"seller","type":"address"}],"stateMutability":"view","type":"function"},{"inputs":[{"internalType":"address","name":"buyerAddr","type":"address"},{"internalType":"address","name":"sellerAddr","type":"address"},{"internalType":"uint256","name":"amount","type":"uint256"}],"name":"monitorEnergyTransfer","outputs":[{"internalType":"bool","name":"","type":"bool"}],"stateMutability":"nonpayable","type":"function"},{"inputs":[],"name":"myBuyingHistory","outputs":[{"components":[{"internalType":"uint256","name":"energybought","type":"uint256"},{"internalType":"uint256","name":"amountpaid","type":"uint256"},{"internalType":"address","name":"seller","type":"address"}],"internalType":"struct EnergyTrading.BuyerHistory[]","name":"","type":"tuple[]"}],"stateMutability":"view","type":"function"},{"inputs":[],"name":"mySellingHistory","outputs":[{"components":[{"internalType":"uint256","name":"customertransferedenergy","type":"uint256"},{"internalType":"uint256","name":"customerremainingenergy","type":"uint256"},{"internalType":"uint256","name":"customerboughtenergy","type":"uint256"},{"internalType":"uint256","name":"perunitprice","type":"uint256"},{"internalType":"address","name":"buyer","type":"address"}],"internalType":"struct EnergyTrading.Customer[]","name":"","type":"tuple[]"}],"stateMutability":"view","type":"function"},{"inputs":[],"name":"registerBuyer","outputs":[],"stateMutability":"nonpayable","type":"function"},{"inputs":[{"internalType":"uint256","name":"totalenergyAvaialble","type":"uint256"},{"internalType":"uint256","name":"pricePerUnit","type":"uint256"}],"name":"registerSeller","outputs":[],"stateMutability":"nonpayable","type":"function"},{"inputs":[{"internalType":"address","name":"","type":"address"}],"name":"sellerpage","outputs":[{"internalType":"bool","name":"isavailable","type":"bool"},{"internalType":"uint256","name":"totalenergyavailable","type":"uint256"},{"internalType":"uint256","name":"priceperunit","type":"uint256"},{"internalType":"uint256","name":"totalSoldUnit","type":"uint256"},{"internalType":"uint256","name":"totalEarnings","type":"uint256"},{"internalType":"uint256","name":"totalActiveConnections","type":"uint256"}],"stateMutability":"view","type":"function"},{"inputs":[{"internalType":"address","name":"","type":"address"},{"internalType":"uint256","name":"","type":"uint256"}],"name":"sellinghistory","outputs":[{"internalType":"uint256","name":"customertransferedenergy","type":"uint256"},{"internalType":"uint256","name":"customerremainingenergy","type":"uint256"},{"internalType":"uint256","name":"customerboughtenergy","type":"uint256"},{"internalType":"uint256","name":"perunitprice","type":"uint256"},{"internalType":"address","name":"buyer","type":"address"}],"stateMutability":"view","type":"function"},{"inputs":[],"name":"totalTrades","outputs":[{"internalType":"uint256","name":"","type":"uint256"}],"stateMutability":"view","type":"function"},{"inputs":[{"internalType":"uint256","name":"","type":"uint256"}],"name":"trades","outputs":[{"internalType":"address","name":"buyer","type":"address"},{"internalType":"address","name":"seller","type":"address"},{"internalType":"uint256","name":"energyAmount","type":"uint256"},{"internalType":"uint256","name":"priceperunit","type":"uint256"},{"internalType":"uint256","name":"totalprice","type":"uint256"},{"internalType":"bool","name":"completed","type":"bool"}],"stateMutability":"view","type":"function"},{"inputs":[],"name":"yourCurrentCustomers","outputs":[{"components":[{"internalType":"uint256","name":"customertransferedenergy","type":"uint256"},{"internalType":"uint256","name":"customerremainingenergy","type":"uint256"},{"internalType":"uint256","name":"customerboughtenergy","type":"uint256"},{"internalType":"uint256","name":"perunitprice","type":"uint256"},{"internalType":"address","name":"buyer","type":"address"}],"internalType":"struct EnergyTrading.Customer[]","name":"","type":"tuple[]"}],"stateMutability":"view","type":"function"}]
+
+let web3;
+let contract;
+let connectedAccount = null;
+
+// Initialize Web3 and Contract
+async function initWeb3() {
+    if (window.ethereum) {
+        try {
+            // Request account access
+            await window.ethereum.request({ method: 'eth_requestAccounts' });
+            
+            // Create Web3 instance
+            web3 = new Web3(window.ethereum);
+            contract = new web3.eth.Contract(CONTRACT_ABI, CONTRACT_ADDRESS);
+            
+            console.log('Web3 initialized successfully');
+            return true;
+        } catch (error) {
+            console.error('Error initializing Web3:', error);
+            showAlert('Error initializing Web3: ' + error.message, 'danger');
+            return false;
+        }
+    } else {
+        console.error('No Ethereum provider found');
+        showAlert('Please install MetaMask to use this feature', 'warning');
+        return false;
+    }
+}
+
+// Check if user is registered
+async function checkRegistration(address) {
+    showLoading('Checking registration status...');
+    try {
+        const buyerData = await contract.methods.buyerpage(address).call();
+        const isRegistered = buyerData.active;
+        
+        const badge = document.getElementById('registrationBadge');
+        const registerBtn = document.getElementById('registerBtn');
+        
+        badge.classList.remove('bg-success', 'bg-danger', 'bg-warning', 'bg-yellow-400', 'text-white', 'text-gray-900');
+        if (!connectedAccount) {
+            badge.textContent = 'Connect Wallet';
+            badge.classList.add('bg-yellow-400', 'text-gray-900');
+            registerBtn.style.display = 'none';
+        } else if (isRegistered) {
+            badge.textContent = 'Registered';
+            badge.classList.add('bg-success', 'text-white');
+            registerBtn.style.display = 'none';
+            
+            // Update dashboard data
+            document.getElementById('totalBought').textContent = parseInt(buyerData.totalEnergyBought) + ' kWh';
+            document.getElementById('totalBill').textContent = web3.utils.fromWei(buyerData.totalBill, 'ether') + ' BNB';
+            
+            // Load available sellers
+            loadAvailableSellers();
+        } else {
+            badge.textContent = 'Not Registered';
+            badge.classList.add('bg-danger', 'text-white');
+            registerBtn.style.display = '';
+        }
+        if (registerBtn) {
+            console.log('isRegistered:', isRegistered);
+            registerBtn.style.display = isRegistered ? 'none' : '';
+            registerBtn.disabled = isRegistered;
+        }
+    } catch (error) {
+        handleBlockchainError(error, 'Registration check');
+    } finally {
+        hideLoading();
+    }
+}
+
+// async function checkRegistration(address) {
+//     showLoading('Checking registration status...');
+//     try {
+//         // Call the contract to get buyer data
+//         const buyerData = await contract.methods.buyerpage(address).call();
+//         const isRegistered = buyerData.active;
+
+//         const badge = document.getElementById('registrationBadge');
+//         const registerBtn = document.getElementById('registerBtn');
+//         // Always reset badge classes first
+//         badge.classList.remove('bg-success', 'bg-danger', 'bg-warning', 'bg-yellow-400', 'text-white', 'text-gray-900');
+
+//         if (!connectedAccount) {
+//             // Wallet not connected
+//             badge.textContent = 'Connect Wallet';
+//             badge.classList.add('bg-yellow-400', 'text-gray-900');
+//             if (registerBtn) registerBtn.style.display = 'none';
+//             // Optionally clear dashboard data
+//             document.getElementById('totalBought').textContent = 'N/A';
+//             document.getElementById('totalBill').textContent = 'N/A';
+//         } else if (isRegistered) {
+//             // Registered
+//             badge.textContent = 'Registered';
+//             badge.classList.add('bg-success', 'text-white');
+//             if (registerBtn) registerBtn.style.display = 'none';
+//             // Update dashboard data
+//             document.getElementById('totalBought').textContent = web3.utils.fromWei(buyerData.totalEnergyBought, 'ether') + ' kWh';
+//             document.getElementById('totalBill').textContent = web3.utils.fromWei(buyerData.totalBill, 'ether') + ' BNB';
+//             // Load available sellers if needed
+//             if (typeof loadAvailableSellers === 'function') {
+//                 loadAvailableSellers();
+//             }
+//         } else {
+//             // Not registered
+//             badge.textContent = 'Not Registered';
+//             badge.classList.add('bg-danger', 'text-white');
+//             if (registerBtn) registerBtn.style.display = '';
+//             // Optionally clear dashboard data
+//             document.getElementById('totalBought').textContent = 'N/A';
+//             document.getElementById('totalBill').textContent = 'N/A';
+//         }
+//         // Optionally, disable the register button if registered
+//         if (registerBtn) {
+//             registerBtn.disabled = isRegistered;
+//         }
+//     } catch (error) {
+//         handleBlockchainError(error, 'Registration check');
+//     } finally {
+//         hideLoading();
+//     }
+// }
+
+// Register as Buyer
+async function registerAsBuyer() {
+    showLoading('Registering on blockchain...');
+    try {
+        await contract.methods.registerBuyer().send({ from: connectedAccount });
+        showAlert('Successfully registered as buyer!', 'success');
+        await checkRegistration(connectedAccount);
+    } catch (error) {
+        handleBlockchainError(error, 'Registration');
+    } finally {
+        hideLoading();
+    }
+}
+
+// Load Available Sellers
+async function loadAvailableSellers() {
+    showLoading('Loading available sellers...');
+    try {
+        const sellers = [];
+        let index = 0;
+        
+        while (true) {
+            try {
+                const seller = await contract.methods.AvailableSellers(index).call();
+                if (seller === '0x0000000000000000000000000000000000000000') break;
+                sellers.push(seller);
+                index++;
+            } catch (error) {
+                break;
+            }
+        }
+
+        const tbody = document.getElementById('sellersTableBody');
+        if (tbody) {
+            tbody.innerHTML = sellers.length ? 
+                sellers.map(seller => `
+                    <tr>
+                        <td>
+                            <a href="/dashboard/producer_profile/${seller}" class="clickable-link">${seller}</a>
+                        </td>
+                    </tr>
+                `).join('') :
+                '<tr><td>No sellers available</td></tr>';
+        }
+    } catch (error) {
+        handleBlockchainError(error, 'Loading sellers');
+    } finally {
+        hideLoading();
+    }
+}
+
+async function loadBuyingHistory() {
+    showLoading('Loading your buying history...');
+    try {
+        const history = await contract.methods.myBuyingHistory().call({ from: connectedAccount });
+        const tbody = document.getElementById('buyingHistoryTableBody');
+        
+        if (history.length === 0) {
+            tbody.innerHTML = '<tr><td colspan="3">No buying history available</td></tr>';
+            return;
+        }
+
+        tbody.innerHTML = history.map((trade, index) => `
+            <tr>
+                <td>${parseInt(String(trade.energybought))}</td>
+                <td>${web3.utils.fromWei(trade.amountpaid, 'ether')}</td>
+                <td>
+                    <a href="/dashboard/producer_profile/${trade.seller}" class="clickable-link">${trade.seller}</a>
+                </td>
+            </tr>
+        `).join('');
+    } catch (error) {
+        handleBlockchainError(error, 'Loading buying history');
+    } finally {
+        hideLoading();
+    }
+}
+
+async function loadTradesHistory() {
+    showLoading('Loading trades history...');
+    try {
+        const totalTrades = await contract.methods.totalTrades().call();
+        const tbody = document.getElementById('tradesHistoryTableBody');
+        
+        if (totalTrades === '0') {
+            tbody.innerHTML = '<tr><td colspan="6">No trades history available</td></tr>';
+            return;
+        }
+
+        const trades = [];
+        for (let i = 0; i < totalTrades; i++) {
+            const trade = await contract.methods.trades(i).call();
+            trades.push(trade);
+        }
+
+        tbody.innerHTML = trades.map((trade, index) => `
+            <tr>
+                <td>${index + 1}</td>
+                <td>${trade.buyer}</td>
+                <td>
+                    <a href="/dashboard/producer_profile/${trade.seller}" class="clickable-link">${trade.seller}</a>
+                </td>
+                <td>${parseInt(String(trade.energyAmount))}</td>
+                <td>${web3.utils.fromWei(trade.priceperunit, 'ether')}</td>
+                <td>${web3.utils.fromWei(trade.totalprice, 'ether')}</td>
+            </tr>
+        `).join('');
+    } catch (error) {
+        handleBlockchainError(error, 'Loading trades history');
+    } finally {
+        hideLoading();
+    }
+}
+
+async function loadProfileData() {
+    if (!connectedAccount) return;
+    
+    try {
+        const buyerData = await contract.methods.buyerpage(connectedAccount).call();
+        
+        document.getElementById('profileWalletAddress').value = connectedAccount;
+        document.getElementById('profileRegistrationStatus').innerHTML = buyerData.active ? 
+            '<span class="badge bg-success">Registered</span>' : 
+            '<span class="badge bg-danger">Not Registered</span>';
+        document.getElementById('profileTotalEnergy').textContent = parseInt(buyerData.totalEnergyBought) + ' kWh';
+        document.getElementById('profileTotalBill').textContent = web3.utils.fromWei(buyerData.totalBill, 'ether') + ' BNB';
+    } catch (error) {
+        handleBlockchainError(error, 'Loading profile data');
+    }
+}
+
+// Event Listeners
+document.getElementById('registerBtn').addEventListener('click', registerAsBuyer);
+document.getElementById('viewSellersBtn').addEventListener('click', async function() {
+    if (!connectedAccount) {
+        showAlert('Please connect your wallet first', 'warning');
+        return;
+    }
+    await loadAvailableSellers();
+    const sellersModal = new bootstrap.Modal(document.getElementById('sellersModal'));
+    sellersModal.show();
+});
+
+document.getElementById('viewBuyingHistoryBtn').addEventListener('click', async function() {
+    if (!connectedAccount) {
+        showAlert('Please connect your wallet first', 'warning');
+        return;
+    }
+    await loadBuyingHistory();
+    const buyingHistoryModal = new bootstrap.Modal(document.getElementById('buyingHistoryModal'));
+    buyingHistoryModal.show();
+});
+
+document.getElementById('viewTradesHistoryBtn').addEventListener('click', async function() {
+    if (!connectedAccount) {
+        showAlert('Please connect your wallet first', 'warning');
+        return;
+    }
+    await loadTradesHistory();
+    const tradesHistoryModal = new bootstrap.Modal(document.getElementById('tradesHistoryModal'));
+    tradesHistoryModal.show();
+});
+
+document.getElementById('editAddressBtn').addEventListener('click', async function() {
+    const inputs = [
+        document.getElementById('addressLine1'),
+        document.getElementById('districtState'),
+        document.getElementById('country'),
+        document.getElementById('pincode')
+    ];
+    const button = this;
+    
+    if (inputs[0].readOnly) {
+        // Enable editing
+        inputs.forEach(input => input.readOnly = false);
+        button.textContent = 'Save';
+    } else {
+        // Save the new address
+        try {
+            showLoading('Updating address...');
+            const response = await fetch('/dashboard/update_address/', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'X-CSRFToken': getCookie('csrftoken')
+                },
+                body: JSON.stringify({
+                    address_line1: inputs[0].value,
+                    district_state: inputs[1].value,
+                    country: inputs[2].value,
+                    pincode: inputs[3].value
+                })
+            });
+            
+            if (response.ok) {
+                showAlert('Address updated successfully!', 'success');
+                inputs.forEach(input => input.readOnly = true);
+                button.textContent = 'Edit';
+            } else {
+                throw new Error('Failed to update address');
+            }
+        } catch (error) {
+            showAlert('Failed to update address: ' + error.message, 'danger');
+        } finally {
+            hideLoading();
+        }
+    }
+});
+
+// Wallet Connection Logic
+const connectBtn = document.getElementById('connectWallet');
+const disconnectBtn = document.getElementById('disconnectWallet');
+const walletInput = document.getElementById('wallet_address');
+const walletAlert = document.getElementById('walletAlert');
+
+function showAlert(msg, type='info') {
+    walletAlert.innerHTML = `<div class="bg-${type}-100 border border-${type}-400 text-${type}-700 px-4 py-3 rounded relative mb-4" role="alert">${msg}<button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button></div>`;
+}
+
+async function updateUI() {
+    if (connectedAccount) {
+        if (walletInput) walletInput.value = connectedAccount;
+        if (connectBtn) connectBtn.style.display = 'none';
+        if (disconnectBtn) disconnectBtn.style.display = '';
+        const registerBtn = document.getElementById('registerBtn');
+        if (registerBtn) registerBtn.disabled = false;
+        const badge = document.getElementById('registrationStatus')?.querySelector('.badge');
+        if (badge) badge.classList.remove('blurred');
+        // --- Ensure Web3 is initialized before checking registration ---
+        const web3Ready = await initWeb3();
+        if (web3Ready) {
+            await checkRegistration(connectedAccount);
+        }
+    } else {
+        if (walletInput) walletInput.value = '';
+        if (connectBtn) connectBtn.style.display = '';
+        if (disconnectBtn) disconnectBtn.style.display = 'none';
+        showAlert('Please connect your MetaMask wallet to view your dashboard data.', 'warning');
+        const registerBtn = document.getElementById('registerBtn');
+        if (registerBtn) registerBtn.disabled = true;
+        const badge = document.getElementById('registrationStatus')?.querySelector('.badge');
+        if (badge) badge.classList.add('blurred');
+        const totalSold = document.getElementById('totalSold');
+        if (totalSold) totalSold.textContent = 'N/A';
+        const totalEarnings = document.getElementById('totalEarnings');
+        if (totalEarnings) totalEarnings.textContent = 'N/A';
+    }
+}
+
+if (connectBtn) {
+    connectBtn.onclick = async function(e) {
+        e.preventDefault();
+        showLoading('Connecting to MetaMask...');
+        try {
+            if (!window.ethereum) {
+                showAlert('MetaMask is not installed or not accessible.', 'danger');
+                hideLoading();
+                return;
+            }
+            const accounts = await window.ethereum.request({ method: 'eth_requestAccounts' });
+            if (accounts.length === 0) {
+                connectedAccount = null;
+                showAlert('No wallet connected. Please connect in MetaMask.', 'warning');
+            } else {
+                connectedAccount = accounts[0];
+                showAlert('Wallet connected: ' + connectedAccount, 'success');
+            }
+            await updateUI();
+        } catch (error) {
+            showAlert('Could not connect to MetaMask: ' + error.message, 'danger');
+        } finally {
+            hideLoading();
+        }
+    };
+}
+
+disconnectBtn.onclick = function(e) {
+    e.preventDefault();
+    console.log('Disconnect wallet button clicked');
+    connectedAccount = null;
+    updateUI();
+    showAlert('Wallet disconnected', 'info');
+};
+
+// Add MetaMask event listeners
+if (window.ethereum) {
+    window.ethereum.on('accountsChanged', async function (accounts) {
+        console.log('Accounts changed:', accounts);
+        connectedAccount = accounts[0] || null;
+        if (connectedAccount) {
+            showAlert('Wallet changed: ' + connectedAccount, 'info');
+        } else {
+            showAlert('No wallet connected.', 'warning');
+        }
+        await updateUI();
+    });
+
+    window.ethereum.on('chainChanged', function(chainId) {
+        console.log('Chain changed:', chainId);
+        // Reload the page when the chain changes
+        window.location.reload();
+    });
+}
+
+// Initialize on page load
+(async function() {
+    console.log('Initializing...');
+    if (await initWeb3()) {
+        console.log('Web3 initialized, updating UI');
+        updateUI();
+    }
+})();
+
+function showLoading(message = 'Processing...') {
+    document.getElementById('loadingText').textContent = message;
+    document.getElementById('loadingSpinner').style.display = 'flex';
+}
+
+function hideLoading() {
+    document.getElementById('loadingSpinner').style.display = 'none';
+}
+
+function handleBlockchainError(error, operation) {
+    console.error(`Error during ${operation}: ${error.message}`);
+    let errorMessage = 'An error occurred';
+    if (error.code === 4001) {
+        errorMessage = 'Transaction was rejected by user';
+    } else if (error.code === -32603) {
+        errorMessage = 'Transaction failed. Please check your gas settings';
+    } else if (error.message && error.message.includes('insufficient funds')) {
+        errorMessage = 'Insufficient funds for transaction';
+    } else if (error.message && error.message.includes('user denied')) {
+        errorMessage = 'Transaction was denied';
+    }
+    showAlert(`${operation} failed: ${errorMessage}`, 'danger');
+}
+</script>
+{% endblock %}

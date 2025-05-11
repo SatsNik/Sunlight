@@ -1,0 +1,24 @@
+<svg width="1920" height="1080" viewBox="0 0 1920 1080" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <rect width="1920" height="1080" fill="#0A192F"/>
+  <!-- Blockchain grid -->
+  <g opacity="0.12">
+    <rect x="100" y="100" width="300" height="300" rx="30" stroke="#4FC3F7" stroke-width="3"/>
+    <rect x="500" y="200" width="300" height="300" rx="30" stroke="#FFD700" stroke-width="3"/>
+    <rect x="900" y="100" width="300" height="300" rx="30" stroke="#66FFCC" stroke-width="3"/>
+    <rect x="1300" y="250" width="300" height="300" rx="30" stroke="#4FC3F7" stroke-width="3"/>
+  </g>
+  <!-- Energy lines -->
+  <g opacity="0.18">
+    <path d="M0 800 Q960 200 1920 800" stroke="#FFD700" stroke-width="4" fill="none"/>
+    <path d="M0 900 Q960 300 1920 900" stroke="#66FFCC" stroke-width="3" fill="none"/>
+  </g>
+  <!-- Nodes -->
+  <circle cx="250" cy="250" r="18" fill="#FFD700" opacity="0.7"/>
+  <circle cx="650" cy="350" r="12" fill="#4FC3F7" opacity="0.7"/>
+  <circle cx="1050" cy="250" r="15" fill="#66FFCC" opacity="0.7"/>
+  <circle cx="1450" cy="400" r="10" fill="#FFD700" opacity="0.7"/>
+  <!-- Eco leaf -->
+  <path d="M1800 900 Q1850 800 1900 900 Q1850 1000 1800 900 Z" fill="#66FFCC" opacity="0.12"/>
+  <!-- Sun -->
+  <circle cx="200" cy="100" r="60" fill="#FFD700" opacity="0.10"/>
+</svg>

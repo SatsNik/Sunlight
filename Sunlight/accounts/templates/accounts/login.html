@@ -1,0 +1,100 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Login - Sunlight</title>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css">
+    <style>
+        body {
+            min-height: 100vh;
+            background: linear-gradient(135deg, #f9fbe7 0%, #fffde4 100%);
+            font-family: 'Segoe UI', 'Roboto', Arial, sans-serif;
+        }
+        .sunlight-card {
+            max-width: 440px;
+            margin: 7vh auto;
+            background: #fff;
+            border-radius: 18px;
+            box-shadow: 0 4px 32px rgba(0,0,0,0.08), 0 1.5px 6px rgba(255, 215, 0, 0.08);
+            padding: 2.5rem 2rem 2rem 2rem;
+            border: 1.5px solid #ffe066;
+        }
+        .sunlight-title {
+            color: #f9a825;
+            font-weight: 700;
+            letter-spacing: 1px;
+            text-align: center;
+            margin-bottom: 1.5rem;
+        }
+        .btn-sunlight {
+            background: linear-gradient(90deg, #f9a825 0%, #ffd600 100%);
+            color: #fff;
+            border: none;
+            font-weight: 600;
+            box-shadow: 0 2px 8px rgba(255, 215, 0, 0.12);
+        }
+        .btn-sunlight:hover {
+            background: linear-gradient(90deg, #ffd600 0%, #f9a825 100%);
+            color: #fff;
+        }
+        .form-label {
+            color: #388e3c;
+            font-weight: 500;
+        }
+        .form-control:focus {
+            border-color: #f9a825;
+            box-shadow: 0 0 0 0.2rem rgba(249, 168, 37, 0.15);
+        }
+        .alert {
+            border-radius: 8px;
+        }
+        .sunlight-link {
+            color: #388e3c;
+            font-weight: 500;
+        }
+        .sunlight-link:hover {
+            color: #f9a825;
+            text-decoration: underline;
+        }
+    </style>
+</head>
+<body>
+<div class="sunlight-card">
+    <h2 class="sunlight-title">Login to Sunlight</h2>
+    {% if messages %}
+        {% for message in messages %}
+            <div class="alert alert-{{ message.tags }}">{{ message }}</div>
+        {% endfor %}
+    {% endif %}
+    {% if form.non_field_errors %}
+        <div class="alert alert-danger">{{ form.non_field_errors }}</div>
+    {% endif %}
+    <form method="post" novalidate>
+        {% csrf_token %}
+        <div class="mb-3">
+            {{ form.identifier.label_tag }}
+            {{ form.identifier }}
+            {{ form.identifier.errors }}
+        </div>
+        <div class="mb-3">
+            {{ form.password.label_tag }}
+            {{ form.password }}
+            {{ form.password.errors }}
+        </div>
+        <div class="mb-3">
+            {{ form.captcha_question.label_tag }}
+            {{ form.captcha_question }}
+            {{ form.captcha_question.errors }}
+            {{ form.captcha_answer }}
+        </div>
+        <button type="submit" class="btn btn-sunlight w-100">Login</button>
+        <a href="{% url 'register' %}" class="btn sunlight-link w-100 mt-2">Don't have an account? Register</a>
+        <div class="mt-2 text-center">
+            <a href="{% url 'forgot_password' %}" class="sunlight-link">Forgot Password?</a>
+        </div>
+    </form>
+</div>
+</body>
+</html> 

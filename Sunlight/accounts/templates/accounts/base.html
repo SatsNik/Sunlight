@@ -1,0 +1,138 @@
+<!-- <!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sunlight - Clean Energy for All</title>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css">
+    <style>
+        :root {
+            --blockchain-dark: #050b14;       /* Dark blue background */
+            --blockchain-glow: rgba(100, 255, 218, 0.1); /* Subtle glow effect */
+        }
+        
+        body {
+            min-height: 100vh;
+            font-family: 'Segoe UI', 'Roboto', Arial, sans-serif;
+            position: relative;
+            overflow-x: hidden;
+            background: linear-gradient(135deg, #050b14 0%, #061126 100%);
+        }
+        
+        /* Extremely dark blue background with blockchain-inspired patterns */
+        body:before {
+            content: "";
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: -1;
+            background-image: 
+                radial-gradient(circle at 10% 20%, rgba(100, 255, 218, 0.08) 0%, transparent 30%),
+                radial-gradient(circle at 80% 30%, rgba(86, 114, 255, 0.05) 0%, transparent 35%),
+                radial-gradient(circle at 30% 70%, rgba(130, 87, 230, 0.06) 0%, transparent 35%),
+                radial-gradient(circle at 90% 85%, rgba(100, 255, 218, 0.05) 0%, transparent 30%),
+                url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='100' height='100' viewBox='0 0 100 100'%3E%3Cpath fill='none' stroke='rgba(100, 255, 218, 0.1)' stroke-width='0.5' d='M50 20 L75 35 L75 65 L50 80 L25 65 L25 35 Z'/%3E%3Cpath fill='none' stroke='rgba(86, 114, 255, 0.1)' stroke-width='0.5' d='M50 10 L85 30 L85 70 L50 90 L15 70 L15 30 Z'/%3E%3Cpath fill='none' stroke='rgba(130, 87, 230, 0.08)' stroke-width='0.3' d='M50 0 L100 25 L100 75 L50 100 L0 75 L0 25 Z'/%3E%3C/svg%3E"),
+                linear-gradient(135deg, rgba(6, 17, 38, 0.95) 0%, rgba(5, 11, 20, 0.96) 100%);
+            backdrop-filter: blur(100px);
+        }
+        
+        /* Add subtle blockchain network lines in the background */
+        body:after {
+            content: "";
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%; 
+            z-index: -1;
+            background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='400' height='400' viewBox='0 0 800 800'%3E%3Cg fill='none' stroke='rgba(100, 255, 218, 0.05)' stroke-width='1'%3E%3Cpath d='M769 229L1037 260.9M927 880L731 737 520 660 309 538 40 599 295 764 126.5 879.5 40 599-197 493 102 382-31 229 126.5 79.5-69-63'/%3E%3Cpath d='M-31 229L237 261 390 382 603 493 308.5 537.5 101.5 381.5M370 905L295 764'/%3E%3Cpath d='M520 660L578 842 731 737 840 599 603 493 520 660 295 764 309 538 390 382 539 269 769 229 577.5 41.5 370 105 295 -36 126.5 79.5 237 261 102 382 40 599 -69 737 127 880'/%3E%3Cpath d='M520-140L578.5 42.5 731-63M603 493L539 269 237 261 370 105M902 382L539 269M390 382L102 382'/%3E%3Cpath d='M-222 42L126.5 79.5 370 105 539 269 577.5 41.5 927 80 769 229 902 382 603 493 731 737M295-36L577.5 41.5M578 842L295 764M40-201L127 80M102 382L-261 269'/%3E%3C/g%3E%3Cg fill='rgba(86, 114, 255, 0.04)'%3E%3Ccircle cx='769' cy='229' r='5'/%3E%3Ccircle cx='539' cy='269' r='5'/%3E%3Ccircle cx='603' cy='493' r='5'/%3E%3Ccircle cx='731' cy='737' r='5'/%3E%3Ccircle cx='520' cy='660' r='5'/%3E%3Ccircle cx='309' cy='538' r='5'/%3E%3Ccircle cx='295' cy='764' r='5'/%3E%3Ccircle cx='40' cy='599' r='5'/%3E%3Ccircle cx='102' cy='382' r='5'/%3E%3Ccircle cx='127' cy='80' r='5'/%3E%3Ccircle cx='370' cy='105' r='5'/%3E%3Ccircle cx='578' cy='42' r='5'/%3E%3Ccircle cx='237' cy='261' r='5'/%3E%3Ccircle cx='390' cy='382' r='5'/%3E%3C/g%3E%3C/svg%3E");
+            opacity: 0.4;
+        }
+
+        .page-container {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            padding: 2rem 1rem;
+        }
+        
+        .sunlight-logo {
+            text-align: center;
+            margin-bottom: 2rem;
+        }
+        
+        .sunlight-logo img {
+            max-width: 150px;
+            filter: drop-shadow(0 0 15px rgba(100, 255, 218, 0.3));
+        }
+        
+        .sunlight-logo h1 {
+            color: #64ffda;
+            font-size: 2rem;
+            font-weight: 700;
+            margin-top: 1rem;
+            letter-spacing: 1px;
+            text-shadow: 0 0 15px rgba(100, 255, 218, 0.3);
+        }
+        
+        .footer {
+            text-align: center;
+            color: rgba(255, 255, 255, 0.5);
+            margin-top: 2rem;
+            font-size: 0.85rem;
+        }
+        
+        .footer a {
+            color: rgba(100, 255, 218, 0.7);
+            text-decoration: none;
+            transition: all 0.3s ease;
+        }
+        
+        .footer a:hover {
+            color: #64ffda;
+            text-shadow: 0 0 10px rgba(100, 255, 218, 0.4);
+        }
+        
+        /* Responsive adjustments */
+        @media (max-width: 576px) {
+            .page-container {
+                padding: 1rem;
+            }
+            .sunlight-logo img {
+                max-width: 100px;
+            }
+            .sunlight-logo h1 {
+                font-size: 1.5rem;
+            }
+        }
+    </style>
+    {% block extra_head %}{% endblock %}
+</head>
+<body>
+    <div class="page-container">
+        <div class="container">
+            <div class="row justify-content-center">
+                <div class="col-md-10 col-lg-8">
+                    <div class="sunlight-logo">
+                        <img src="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' width='150' height='150'%3E%3Cpath fill='%2364ffda' d='M3.55,18.54L4.96,19.95L6.76,18.16L5.34,16.74M11,22.45C11.32,22.45 13,22.45 13,22.45V19.5H11M12,5.5A6,6 0 0,0 6,11.5A6,6 0 0,0 12,17.5A6,6 0 0,0 18,11.5C18,8.18 15.31,5.5 12,5.5M20,12.5H23V10.5H20M17.24,18.16L19.04,19.95L20.45,18.54L18.66,16.74M20.45,4.46L19.04,3.05L17.24,4.84L18.66,6.26M13,0.55H11V3.5H13M4,10.5H1V12.5H4M6.76,4.84L4.96,3.05L3.55,4.46L5.34,6.26L6.76,4.84Z' /%3E%3C/svg%3E" alt="Sunlight Logo">
+                        <h1>SUNLIGHT</h1>
+                    </div>
+                    
+                    {% block content %}{% endblock %}
+                    
+                    <div class="footer">
+                        <p>Powered by Renewable Energy & Blockchain Technology</p>
+                        <p>&copy; 2025 Sunlight. All rights reserved.</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+    {% block extra_scripts %}{% endblock %}
+</body>
+</html> -->

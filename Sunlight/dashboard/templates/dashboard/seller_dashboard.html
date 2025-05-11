@@ -1,0 +1,889 @@
+{% extends 'base.html' %}
+{% block content %}
+<link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+<style>
+    body {
+        font-family: 'Segoe UI', 'Roboto', Arial, sans-serif;
+        background: linear-gradient(135deg, #e8f5e9 0%, #e0f7fa 100%);
+    }
+    .glass {
+        background: rgba(255, 255, 255, 0.38);
+        box-shadow: 0 8px 32px 0 rgba(31, 38, 135, 0.18);
+        backdrop-filter: blur(14px);
+        -webkit-backdrop-filter: blur(14px);
+        border-radius: 18px;
+        border: 2px solid rgba(0,191,174,0.18);
+    }
+    .glass-green {
+        border: 2px solid #43e97b55;
+    }
+    .glass-blue {
+        border: 2px solid #00bfae55;
+    }
+    .glass-yellow {
+        border: 2px solid #ffe06655;
+    }
+    .sunlight-gradient {
+        background: linear-gradient(90deg, #00bfae 0%, #43e97b 100%);
+    }
+    .blockchain-accent {
+        color: #00bfae;
+    }
+    .dashboard-card {
+        background: #fff;
+        border-radius: 16px;
+        box-shadow: 0 4px 24px rgba(76, 175, 80, 0.08), 0 1.5px 6px rgba(0, 150, 136, 0.08);
+        border: 1.5px solid #b2dfdb;
+        padding: 1.5rem 1.2rem 1.2rem 1.2rem;
+        margin-bottom: 1.5rem;
+    }
+    .dashboard-title {
+        color: #388e3c;
+        font-weight: 700;
+        letter-spacing: 1px;
+        text-align: center;
+        margin-bottom: 1.5rem;
+    }
+    .btn-blockchain {
+        background: linear-gradient(90deg, #00bfae 0%, #43e97b 100%);
+        color: #fff;
+        border: none;
+        font-weight: 600;
+        box-shadow: 0 2px 8px rgba(0, 150, 136, 0.12);
+    }
+    .btn-blockchain:hover {
+        background: linear-gradient(90deg, #43e97b 0%, #00bfae 100%);
+        color: #fff;
+    }
+    .table thead th {
+        background: #e0f2f1;
+        color: #00695c;
+        font-weight: 600;
+    }
+    .table-striped>tbody>tr:nth-of-type(odd) {
+        background-color: #f1f8e9;
+    }
+    .modal-content {
+        border-radius: 14px;
+        border: 1.5px solid #b2dfdb;
+    }
+    .dashboard-highlight {
+        color: #00bfae;
+        font-weight: 600;
+    }
+    .spinner-overlay {
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background: rgba(0, 0, 0, 0.5);
+        display: none;
+        justify-content: center;
+        align-items: center;
+        z-index: 9999;
+    }
+    .spinner-container {
+        background: white;
+        padding: 2rem;
+        border-radius: 8px;
+        text-align: center;
+    }
+    .spinner-border {
+        width: 3rem;
+        height: 3rem;
+    }
+    .clickable-link {
+        color: #0d6efd;
+        text-decoration: none;
+        cursor: pointer;
+        align-items: center;
+    }
+    .clickable-link:hover {
+        text-decoration: underline;
+    }
+    .blurred {
+        opacity: 0.5;
+        pointer-events: none;
+    }
+</style>
+<div id="walletAlert"></div>
+<div class="fixed inset-0 -z-10 pointer-events-none">
+  <svg width="100%" height="100%">
+    <!-- Sunlight circle -->
+    <circle cx="12%" cy="18%" r="90" fill="#ffe06633"/>
+    <!-- Blockchain hexagons -->
+    <polygon points="300,120 320,135 320,165 300,180 280,165 280,135" fill="#00bfae22"/>
+    <polygon points="70,400 90,415 90,445 70,460 50,445 50,415" fill="#43e97b22"/>
+    <!-- Blue circuit line -->
+    <rect x="60%" y="10%" width="2" height="400" fill="#2196f333"/>
+    <!-- Subtle chain link -->
+    <ellipse cx="80%" cy="80%" rx="60" ry="20" fill="#00bfae22"/>
+    <!-- More subtle elements as needed -->
+  </svg>
+</div>
+
+<div class="flex flex-wrap items-center justify-between p-4 mb-6 sunlight-gradient glass shadow-lg">
+  <h2 class="text-white font-bold text-2xl">Producer Dashboard</h2>
+  <div class="flex gap-2">
+    <button class="bg-white text-green-700 font-semibold py-2 px-4 rounded-lg shadow hover:bg-green-100 transition" data-bs-toggle="modal" data-bs-target="#profileModal">My Profile</button>
+    <a href="https://testnet.bscscan.com/address/0x5f40beeb31d78474a33775abe9bd85574c76dafb#code" target="_blank" class="bg-white text-blue-600 font-semibold py-2 px-4 rounded-lg shadow hover:bg-blue-50 transition">Blockchain</a>
+    <button class="bg-white text-gray-700 font-semibold py-2 px-4 rounded-lg shadow hover:bg-gray-100 transition" id="connectWallet">Connect</button>
+    <button class="bg-red-500 text-white font-semibold py-2 px-4 rounded-lg shadow hover:bg-red-600 transition" id="disconnectWallet" style="display:none;">Disconnect</button>
+    <a href="{% url 'logout' %}" class="bg-gray-700 text-white font-semibold py-2 px-4 rounded-lg shadow hover:bg-gray-800 transition">Logout</a>
+  </div>
+</div>
+
+<div class="flex justify-center my-4">
+  <input
+    type="text"
+    class="form-control glass px-4 py-2 rounded-full text-center font-mono text-base shadow transition-all duration-300"
+    id="wallet_address"
+    placeholder="Your Wallet Address (auto-filled after connect)"
+    readonly
+    style="width: auto; min-width: 320px; max-width: 100%;"
+  >
+</div>
+
+<div class="flex flex-col items-center justify-center mb-8">
+  <div id="registrationStatus" class="glass glass-yellow flex items-center gap-4 px-6 py-3 rounded-xl mb-4 shadow-lg">
+    <span id="registrationBadge" class="badge px-4 py-1 rounded-full font-semibold text-base shadow glass transition-all duration-300">
+      Not Registered
+    </span>
+  </div>
+
+  <div id="registerFields" class="flex flex-col items-center gap-4 mb-4 p-6 glass glass-blue rounded-xl shadow-lg" style="display:none; width: 100%; max-width: 450px;">
+    <h3 class="text-xl font-semibold text-blue-700 mb-3">Seller Registration Details</h3>
+    <div class="w-full">
+      <label for="registerEnergy" class="block text-sm font-medium text-gray-700 mb-1">Total Energy to Make Available (kWh):</label>
+      <input type="number" id="registerEnergy" name="registerEnergy" class="mt-1 block w-full px-3 py-2 bg-white border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm" placeholder="e.g., 500">
+    </div>
+    <div class="w-full">
+      <label for="registerPrice" class="block text-sm font-medium text-gray-700 mb-1">Price per Unit (BNB per kWh):</label>
+      <input type="text" id="registerPrice" name="registerPrice" class="mt-1 block w-full px-3 py-2 bg-white border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm" placeholder="e.g., 0.0001">
+    </div>
+  </div>
+
+  <button id="registerBtn" class="sunlight-gradient text-white font-bold py-3 px-8 rounded-xl shadow-lg text-lg transition-all duration-300 hover:bg-green-100 hover:text-green-800" style="display:none;">
+    Register on Blockchain
+  </button>
+</div>
+
+<div class="flex flex-wrap gap-8 justify-center mb-8">
+  <div class="glass glass-green p-6 mb-6 min-w-[320px]">
+    <h6 class="text-green-700 font-bold mb-2">Total Energy Sold</h6>
+    <div class="text-2xl font-semibold text-green-800" id="totalSold">0 kWh</div>
+  </div>
+  <div class="glass glass-blue p-6 mb-6 min-w-[320px]">
+    <h6 class="text-blue-700 font-bold mb-2">Total Earnings</h6>
+    <div class="text-2xl font-semibold text-blue-800" id="totalEarnings">0 BNB</div>
+  </div>
+</div>
+
+<!-- Container for Update Actions - Shown only if registered -->
+<div id="updateActionsContainer" class="flex flex-col md:flex-row items-center justify-center gap-6 mb-8 px-4" style="display:none;">
+
+    <!-- Update Energy Availability Card -->
+    <div class="w-full md:w-auto glass glass-blue p-6 rounded-xl shadow-lg flex flex-col items-center" style="min-width: 300px; max-width: 400px;">
+      <h3 class="text-xl font-semibold text-blue-700 mb-4">Update Energy Availability</h3>
+      <div class="w-full mb-3">
+        <label for="newEnergy" class="block text-sm font-medium text-gray-700 mb-1 text-left">New Total Energy (kWh):</label>
+        <input type="number" id="newEnergy" name="newEnergy" class="mt-1 block w-full px-3 py-2 bg-white border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm" placeholder="e.g., 1000">
+      </div>
+      <button id="updateEnergyBtn" class="w-full bg-blue-500 hover:bg-blue-600 text-white font-bold py-2 px-4 rounded-lg shadow-md transition-colors duration-300">
+        Update Energy
+      </button>
+    </div>
+  
+    <!-- Update Price Per Unit Card -->
+    <div class="w-full md:w-auto glass glass-green p-6 rounded-xl shadow-lg flex flex-col items-center" style="min-width: 300px; max-width: 400px;">
+      <h3 class="text-xl font-semibold text-green-700 mb-4">Update Price Per Unit</h3>
+      <div class="w-full mb-3">
+        <label for="newPrice" class="block text-sm font-medium text-gray-700 mb-1 text-left">New Price (BNB per kWh):</label>
+        <input type="text" id="newPrice" name="newPrice" class="mt-1 block w-full px-3 py-2 bg-white border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm" placeholder="e.g., 0.00015">
+      </div>
+      <button id="updatePriceBtn" class="w-full bg-green-500 hover:bg-green-600 text-white font-bold py-2 px-4 rounded-lg shadow-md transition-colors duration-300">
+        Update Price
+      </button>
+    </div>
+  
+  </div>
+
+<div class="flex flex-wrap justify-center gap-6 mb-8">
+  <button class="sunlight-gradient text-white font-semibold py-2 px-6 rounded-lg shadow hover:bg-green-100 hover:text-green-800 transition" id="viewCustomersBtn">Customer's History</button>
+</div>
+
+<!-- Current Connections Table -->
+<div class="glass glass-yellow p-6 mb-6 min-w-[320px]">
+    <h6 class="text-yellow-700 font-bold mb-2">Current Connections</h6>
+    <div class="overflow-x-auto">
+        <table class="min-w-full divide-y divide-green-200">
+            <thead class="bg-green-50">
+                <tr>
+                    <th class="px-6 py-3 text-left text-xs font-medium text-green-700 uppercase tracking-wider">Buyer</th>
+                    <th class="px-6 py-3 text-left text-xs font-medium text-green-700 uppercase tracking-wider">Transferred Energy</th>
+                    <th class="px-6 py-3 text-left text-xs font-medium text-green-700 uppercase tracking-wider">Remaining Energy</th>
+                    <th class="px-6 py-3 text-left text-xs font-medium text-green-700 uppercase tracking-wider">Bought Energy</th>
+                    <th class="px-6 py-3 text-left text-xs font-medium text-green-700 uppercase tracking-wider">Price per Unit</th>
+                </tr>
+            </thead>
+            <tbody id="currentConnectionsTableBody" class="bg-white divide-y divide-green-100">
+                <tr><td colspan="5">N/A</td></tr>
+            </tbody>
+        </table>
+    </div>
+</div>
+
+<!-- Profile Modal -->
+<div class="modal fade" id="profileModal" tabindex="-1" aria-labelledby="profileModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content glass glass-yellow">
+            <div class="modal-header">
+                <h5 class="modal-title" id="profileModalLabel">My Profile</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <div class="mb-3">
+                    <label class="form-label">Username</label>
+                    <input type="text" class="form-control" value="{{ user.username }}" readonly>
+                </div>
+                <div class="mb-3">
+                    <label class="form-label">Email</label>
+                    <input type="email" class="form-control" value="{{ user.email }}" readonly>
+                </div>
+                <div class="mb-3">
+                    <label class="form-label">First Name</label>
+                    <input type="text" class="form-control" value="{{ user.first_name|default:'' }}" readonly>
+                </div>
+                <div class="mb-3">
+                    <label class="form-label">Last Name</label>
+                    <input type="text" class="form-control" value="{{ user.last_name|default:'' }}" readonly>
+                </div>
+                <div class="mb-3">
+                    <label class="form-label">Home Address</label>
+                    <div class="input-group mb-2">
+                        <input type="text" class="form-control" id="addressLine1" value="{{ user.profile.address_line1|default:'' }}" readonly>
+                        <button class="btn btn-outline-secondary" type="button" id="editAddressBtn">Edit</button>
+                    </div>
+                    <div class="input-group mb-2">
+                        <input type="text" class="form-control" id="districtState" value="{{ user.profile.district_state|default:'' }}" readonly>
+                    </div>
+                    <div class="input-group mb-2">
+                        <input type="text" class="form-control" id="country" value="{{ user.profile.country|default:'' }}" readonly>
+                    </div>
+                    <div class="input-group mb-2">
+                        <input type="text" class="form-control" id="pincode" value="{{ user.profile.pincode|default:'' }}" readonly>
+                    </div>
+                </div>
+                <div class="mb-3">
+                    <label class="form-label">My Rating</label>
+                    <div class="rating">
+                        <span class="fa fa-star" data-rating="1"></span>
+                        <span class="fa fa-star" data-rating="2"></span>
+                        <span class="fa fa-star" data-rating="3"></span>
+                        <span class="fa fa-star" data-rating="4"></span>
+                        <span class="fa fa-star" data-rating="5"></span>
+                    </div>
+                    <div id="averageRating">No ratings yet</div>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Customers History Modal -->
+<div class="modal fade" id="customersHistoryModal" tabindex="-1" aria-labelledby="customersHistoryModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content glass glass-yellow">
+            <div class="modal-header">
+                <h5 class="modal-title" id="customersHistoryModalLabel">Customer's History</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <table class="table table-bordered table-hover">
+                    <thead>
+                        <tr>
+                            <th>Customer Address</th>
+                            <th>Energy Transferred (kWh)</th>
+                            <th>Energy Remaining (kWh)</th>
+                            <th>Total Energy Bought (kWh)</th>
+                            <th>Price per Unit (BNB)</th>
+                        </tr>
+                    </thead>
+                    <tbody id="customersHistoryTableBody">
+                        <tr><td colspan="5">No customer history available</td></tr>
+                    </tbody>
+                </table>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="spinner-overlay" id="loadingSpinner">
+    <div class="spinner-container">
+        <div class="spinner-border text-primary" role="status">
+            <span class="visually-hidden">Loading...</span>
+        </div>
+        <div class="mt-2" id="loadingText">Processing...</div>
+    </div>
+</div>
+
+<!-- Add Web3.js -->
+<script src="https://cdn.jsdelivr.net/npm/web3@1.5.2/dist/web3.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/bn.js@4.11.8/lib/bn.js"></script>
+<!-- Add Bootstrap JS -->
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js"></script>
+<!-- Add Font Awesome for ratings -->
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
+
+<script id="contract-abi" type="application/json">{{ contract_abi|safe }}</script>
+
+<script>
+// Contract configuration
+const CONTRACT_ADDRESS = '0x5F40bEeb31D78474a33775Abe9Bd85574C76dafB';
+let CONTRACT_ABI = null;
+try {
+    const abiScript = document.getElementById('contract-abi');
+    if (abiScript && abiScript.textContent) {
+        CONTRACT_ABI = JSON.parse(abiScript.textContent);
+        console.log('Loaded CONTRACT_ABI:', CONTRACT_ABI);
+    } else {
+        throw new Error('ABI script tag missing or empty');
+    }
+} catch (e) {
+    console.error('Failed to parse contract ABI:', e);
+    alert('Critical error: Smart contract ABI could not be loaded. Please contact support.');
+}
+
+let web3;
+let contract;
+let connectedAccount = null;
+let isSellerRegistered = false;
+
+// Initialize Web3 and Contract
+async function initWeb3() {
+    if (!CONTRACT_ABI || !Array.isArray(CONTRACT_ABI)) {
+        showAlert('Smart contract ABI failed to load. Please contact support.', 'danger');
+        return false;
+    }
+    if (window.ethereum) {
+        try {
+            await window.ethereum.request({ method: 'eth_requestAccounts' });
+            web3 = new Web3(window.ethereum);
+            contract = new web3.eth.Contract(CONTRACT_ABI, CONTRACT_ADDRESS);
+            console.log('Web3 initialized successfully');
+            return true;
+        } catch (error) {
+            console.error('Error initializing Web3:', error);
+            showAlert('Error initializing Web3: ' + error.message, 'danger');
+            return false;
+        }
+    } else {
+        console.error('No Ethereum provider found');
+        showAlert('Please install MetaMask to use this feature', 'warning');
+        return false;
+    }
+}
+
+// Check if user is registered
+// async function checkRegistration(address) {
+//     console.log('Checking registration for address:', address);
+//     showLoading('Checking registration status...');
+//     try {
+//         const sellerData = await contract.methods.sellerpage(address).call();
+//         const isRegistered = sellerData.isavailable;
+//         isSellerRegistered = isRegistered;
+        
+//         const badge = document.getElementById('registrationStatus')?.querySelector('.badge') || document.getElementById('registrationBadge');
+//         const registerBtn = document.getElementById('registerBtn');
+//         const totalSoldElem = document.getElementById('totalSold');
+//         const totalEarningsElem = document.getElementById('totalEarnings');
+
+//         if (badge) {
+//             badge.classList.remove('bg-success', 'bg-danger', 'bg-warning', 'bg-yellow-400', 'text-white');
+//             if (!connectedAccount) {
+//                 badge.textContent = 'Connect Wallet';
+//                 badge.classList.add('bg-yellow-400', 'text-gray-900'); // yellow with dark text
+//             } else if (isRegistered) {
+//                 badge.textContent = 'Registered';
+//                 badge.classList.add('bg-success', 'text-white');
+//             } else {
+//                 badge.textContent = 'Not Registered';
+//                 badge.classList.add('bg-danger', 'text-white');
+//             }
+//         }
+//         if (registerBtn) {
+//             registerBtn.style.display = isRegistered ? 'none' : '';
+//             registerBtn.disabled = isRegistered;
+//         }
+//         const registerFields = document.getElementById('registerFields');
+//         if (registerFields) {
+//             registerFields.style.display = isRegistered ? 'none' : '';
+//         }
+
+//         if (isRegistered) {
+//             if (totalSoldElem) totalSoldElem.textContent = web3.utils.fromWei(sellerData.totalSoldUnit, 'ether') + ' kWh';
+//             if (totalEarningsElem) totalEarningsElem.textContent = web3.utils.fromWei(sellerData.totalEarnings, 'ether') + ' BNB';
+
+//             // Fetch livecustomers array (assuming you have a getter like yourCurrentCustomers)
+//             let liveCustomers = [];
+//             try {
+//                 liveCustomers = await contract.methods.yourCurrentCustomers().call({from: connectedAccount});
+//             } catch (e) {
+//                 liveCustomers = [];
+//             }
+//             const tbody = document.getElementById('currentConnectionsTableBody');
+//             if (tbody) {
+//                 if (liveCustomers && liveCustomers.length > 0) {
+//                     tbody.innerHTML = liveCustomers.map(cust => `
+//                         <tr>
+//                             <td>
+//                                 <a href="/dashboard/consumer_profile/${cust.buyer}" class="clickable-link">${cust.buyer}</a>
+//                             </td>
+//                             <td>${web3.utils.fromWei(cust.customertransferedenergy, 'ether')}</td>
+//                             <td>${web3.utils.fromWei(cust.customerremainingenergy, 'ether')}</td>
+//                             <td>${web3.utils.fromWei(cust.customerboughtenergy, 'ether')}</td>
+//                             <td>${web3.utils.fromWei(cust.perunitprice, 'ether')}</td>
+//                         </tr>
+//                     `).join('');
+//                 } else {
+//                     tbody.innerHTML = '<tr><td colspan="5">N/A</td></tr>';
+//                 }
+//             }
+//         } else {
+//             if (totalSoldElem) totalSoldElem.textContent = 'N/A';
+//             if (totalEarningsElem) totalEarningsElem.textContent = 'N/A';
+//             const tbody = document.getElementById('currentConnectionsTableBody');
+//             if (tbody) tbody.innerHTML = '<tr><td colspan="5">N/A</td></tr>';
+//         }
+//     } catch (error) {
+//         console.error('Registration check error:', error);
+//         handleBlockchainError(error, 'Registration check');
+//     } finally {
+//         hideLoading();
+//     }
+// }
+
+// seller_dashboard.html -> <script> section
+
+    async function checkRegistration(address) {
+    console.log('Checking registration for address:', address);
+    showLoading('Checking registration status...');
+    try {
+        const sellerData = await contract.methods.sellerpage(address).call();
+        const isRegistered = sellerData.isavailable; // Assuming 'isavailable' is the boolean from your contract
+        isSellerRegistered = isRegistered; // Update global state if you use this elsewhere
+
+        const badge = document.getElementById('registrationStatus')?.querySelector('.badge') || document.getElementById('registrationBadge');
+        const registerBtn = document.getElementById('registerBtn');
+        const registerFields = document.getElementById('registerFields');
+        const updateActionsContainer = document.getElementById('updateActionsContainer'); // Get the new container
+        const totalSoldElem = document.getElementById('totalSold');
+        const totalEarningsElem = document.getElementById('totalEarnings');
+        const currentConnectionsTableBody = document.getElementById('currentConnectionsTableBody');
+
+
+        // Update Registration Badge and Button visibility
+        if (badge) {
+            badge.classList.remove('bg-success', 'bg-danger', 'bg-warning', 'bg-yellow-400', 'text-white', 'text-gray-900'); // Reset classes
+            if (!connectedAccount) { // Wallet not connected
+                badge.textContent = 'Connect Wallet';
+                badge.classList.add('bg-yellow-400', 'text-gray-900');
+            } else if (isRegistered) { // Wallet connected and seller is registered
+                badge.textContent = 'Registered';
+                badge.classList.add('bg-success', 'text-white');
+            } else { // Wallet connected but seller is NOT registered
+                badge.textContent = 'Not Registered';
+                badge.classList.add('bg-danger', 'text-white');
+            }
+        }
+
+        if (registerBtn) {
+            registerBtn.style.display = isRegistered ? 'none' : (connectedAccount ? '' : 'none');
+            registerBtn.disabled = isRegistered || !connectedAccount;
+        }
+
+        if (registerFields) {
+            registerFields.style.display = isRegistered ? 'none' : (connectedAccount ? 'flex' : 'none'); // Use 'flex' or ''
+        }
+
+        // Show/Hide Update Actions Container and update data if registered
+        if (isRegistered && connectedAccount) {
+            if (updateActionsContainer) {
+                updateActionsContainer.style.display = 'flex'; // Show the update actions
+            }
+            if (totalSoldElem) totalSoldElem.textContent = sellerData.totalSoldUnit ? sellerData.totalSoldUnit.toString() + ' kWh' : '0 kWh';
+            if (totalEarningsElem) totalEarningsElem.textContent = sellerData.totalEarnings ? web3.utils.fromWei(sellerData.totalEarnings.toString(), 'ether') + ' BNB' : '0 BNB';
+
+            // Fetch and display live customers
+            let liveCustomers = [];
+            try {
+                // Ensure your contract has a 'yourCurrentCustomers' method or similar
+                // that returns an array of customer objects/addresses.
+                // This call might need to be specific to your contract.
+                liveCustomers = await contract.methods.yourCurrentCustomers().call({ from: connectedAccount });
+            } catch (e) {
+                console.warn('Could not fetch live customers:', e);
+                liveCustomers = []; // Default to empty if there's an error or method doesn't exist
+            }
+
+            if (currentConnectionsTableBody) {
+                if (liveCustomers && liveCustomers.length > 0) {
+                    // Assuming liveCustomers is an array of objects with a 'buyer' property
+                    // and other relevant details. Adjust if your contract returns just addresses.
+                    currentConnectionsTableBody.innerHTML = liveCustomers.map(cust => {
+                        // Adapt this structure based on what yourCurrentCustomers() returns
+                        const buyerAddress = typeof cust === 'object' ? cust.buyer : cust;
+                        const energyTransfered = typeof cust === 'object' && cust.customertransferedenergy ? parseInt(cust.customertransferedenergy.toString()) : 'N/A';
+                        const energyRemaining = typeof cust === 'object' && cust.customerremainingenergy ? parseInt(cust.customerremainingenergy.toString()) : 'N/A';
+                        const energyBought = typeof cust === 'object' && cust.customerboughtenergy ? parseInt(cust.customerboughtenergy.toString()) : 'N/A';
+                        const costPerunit = typeof cust === 'object' && cust.perunitprice ? web3.utils.fromWei(cust.perunitprice.toString(), 'ether') : 'N/A';
+                        // Add other fields as needed
+                        return `
+                            <tr>
+                                <td>
+                                    <a href="/dashboard/consumer_profile/${buyerAddress}" class="clickable-link">${buyerAddress}</a>
+                                </td>
+                                <td>${energyTransfered} kWh</td>
+                                <td>${energyRemaining} kWh</td>
+                                <td>${energyBought} kWh</td>
+                                <td>${costPerunit} BNB</td>
+                                <!-- Add more columns as needed -->
+                                
+                            </tr>
+                        `;
+                    }).join('');
+                } else {
+                    currentConnectionsTableBody.innerHTML = '<tr><td colspan="3">No active customer connections</td></tr>'; // Adjust colspan
+                }
+            }
+
+        } else { // Not registered or wallet not connected
+            if (updateActionsContainer) {
+                updateActionsContainer.style.display = 'none'; // Hide update actions
+            }
+            if (totalSoldElem) totalSoldElem.textContent = 'N/A';
+            if (totalEarningsElem) totalEarningsElem.textContent = 'N/A';
+            if (currentConnectionsTableBody) {
+                currentConnectionsTableBody.innerHTML = '<tr><td colspan="3">N/A - Connect wallet and register as seller</td></tr>'; // Adjust colspan
+            }
+        }
+
+    } catch (error) {
+        console.error('Registration check error:', error);
+        handleBlockchainError(error, 'Registration check'); // Assuming you have this function
+
+        // Fallback UI state on error
+        const badge = document.getElementById('registrationStatus')?.querySelector('.badge') || document.getElementById('registrationBadge');
+        if (badge) {
+            badge.textContent = 'Error Checking Status';
+            badge.classList.remove('bg-success', 'bg-danger', 'bg-warning', 'bg-yellow-400');
+            badge.classList.add('bg-danger', 'text-white');
+        }
+        const registerBtn = document.getElementById('registerBtn');
+        if(registerBtn) registerBtn.style.display = 'none';
+
+        const registerFields = document.getElementById('registerFields');
+        if(registerFields) registerFields.style.display = 'none';
+
+        const updateActionsContainer = document.getElementById('updateActionsContainer');
+        if(updateActionsContainer) updateActionsContainer.style.display = 'none';
+
+        const totalSoldElem = document.getElementById('totalSold');
+        if (totalSoldElem) totalSoldElem.textContent = 'Error';
+        const totalEarningsElem = document.getElementById('totalEarnings');
+        if (totalEarningsElem) totalEarningsElem.textContent = 'Error';
+
+
+    } finally {
+        hideLoading(); // Assuming you have this function
+    }
+}
+
+// Register as Seller
+async function registerAsSeller() {
+    showLoading('Registering on blockchain...');
+    try {
+        const web3Ready = await initWeb3();
+        if (!web3Ready) return;
+
+        const totalEnergy = document.getElementById('registerEnergy').value;
+        const pricePerUnit = document.getElementById('registerPrice').value;
+        if (!totalEnergy || !pricePerUnit) {
+            showAlert('Please enter both energy amount and price per unit', 'warning');
+            return;
+        }
+        // Convert to correct units if needed
+        const totalEnergyInt = parseInt(totalEnergy, 10);
+        const pricePerUnitWei = web3.utils.toWei(pricePerUnit, 'ether');
+
+        await contract.methods.registerSeller(totalEnergyInt, pricePerUnitWei).send({ from: connectedAccount });
+        showAlert('Successfully registered as seller!', 'success');
+        await checkRegistration(connectedAccount);
+    } catch (error) {
+        handleBlockchainError(error, 'Registration');
+    } finally {
+        hideLoading();
+    }
+}
+
+// Load Customer History
+async function loadCustomerHistory() {
+    if (!requireWallet()) return;
+    if (!requireRegistration()) return;
+    showLoading('Loading customer history...');
+    try {
+        const history = await contract.methods.mySellingHistory().call({ from: connectedAccount });
+        const tbody = document.getElementById('customersHistoryTableBody');
+        if (history.length === 0) {
+            tbody.innerHTML = '<tr><td colspan="5">No customer history available</td></tr>';
+            return;
+        }
+        tbody.innerHTML = history.map(customer => `
+            <tr>
+                <td>
+                    <a href="/dashboard/consumer_profile/${customer.buyer}" class="clickable-link">${customer.buyer}</a>
+                </td>
+                <td>${parseInt(customer.customertransferedenergy)}</td>
+                <td>${parseInt(customer.customerremainingenergy)}</td>
+                <td>${parseInt(customer.customerboughtenergy)}</td>
+                <td>${parseInt(customer.perunitprice)}</td>
+            </tr>
+        `).join('');
+    } catch (error) {
+        handleBlockchainError(error, 'Loading customer history');
+    } finally {
+        hideLoading();
+    }
+}
+
+// Update Energy Available
+async function updateEnergy() {
+    if (!requireWallet()) return;
+    if (!requireRegistration()) return;
+    showLoading('Updating energy availability...');
+    try {
+        const newEnergy = document.getElementById('newEnergy').value;
+        if (!newEnergy) {
+            throw new Error('Please enter new energy amount');
+        }
+        await contract.methods.UpdateTotalEnergyAvailablility(
+            // web3.utils.toWei(newEnergy, 'ether')
+            parseInt(newEnergy, 10)
+        ).send({ from: connectedAccount });
+        showAlert('Energy availability updated successfully!', 'success');
+        await checkRegistration(connectedAccount);
+    } catch (error) {
+        handleBlockchainError(error, 'Updating energy');
+    } finally {
+        hideLoading();
+    }
+}
+
+function showLoading(message = 'Processing...') {
+    document.getElementById('loadingText').textContent = message;
+    document.getElementById('loadingSpinner').style.display = 'flex';
+}
+
+function hideLoading() {
+    document.getElementById('loadingText').textContent = '';
+    document.getElementById('loadingSpinner').style.display = 'none';
+}
+
+// Update Price per Unit
+async function updatePrice() {
+    if (!requireWallet()) return;
+    if (!requireRegistration()) return;
+    showLoading('Updating price per unit...');
+    try {
+        const newPrice = document.getElementById('newPrice').value;
+        if (!newPrice) {
+            throw new Error('Please enter new price');
+        }
+        await contract.methods.UpdatePriceperUnit(
+            web3.utils.toWei(newPrice, 'ether')
+        ).send({ from: connectedAccount });
+        showAlert('Price per unit updated successfully!', 'success');
+        await checkRegistration(connectedAccount);
+    } catch (error) {
+        handleBlockchainError(error, 'Updating price');
+    } finally {
+        hideLoading();
+    }
+}
+
+
+const registerBtn = document.getElementById('registerBtn');
+if (registerBtn) registerBtn.addEventListener('click', registerAsSeller);
+
+const updateEnergyBtn = document.getElementById('updateEnergyBtn');
+if (updateEnergyBtn) updateEnergyBtn.addEventListener('click', updateEnergy);
+
+const updatePriceBtn = document.getElementById('updatePriceBtn');
+if (updatePriceBtn) updatePriceBtn.addEventListener('click', updatePrice);
+
+const viewCustomersBtn = document.getElementById('viewCustomersBtn');
+if (viewCustomersBtn) viewCustomersBtn.addEventListener('click', async function() {
+    if (!connectedAccount) {
+        showAlert('Please connect your wallet first', 'warning');
+        return;
+    }
+    await loadCustomerHistory();
+    const customersHistoryModal = new bootstrap.Modal(document.getElementById('customersHistoryModal'));
+    customersHistoryModal.show();
+});
+
+// Wallet Connection Logic
+// Wallet Connection Logic
+const connectBtn = document.getElementById('connectWallet');
+const disconnectBtn = document.getElementById('disconnectWallet');
+const walletInput = document.getElementById('wallet_address');
+
+function showAlert(msg, type='info') {
+    const walletAlert = document.getElementById('walletAlert');
+    if (walletAlert) {
+        walletAlert.innerHTML = `<div class="alert alert-${type} alert-dismissible fade show" role="alert">${msg}<button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button></div>`;
+    } else {
+        alert(msg); // fallback
+    }
+}
+
+async function updateUI() {
+    if (connectedAccount) {
+        if (walletInput) walletInput.value = connectedAccount;
+        if (connectBtn) connectBtn.style.display = 'none';
+        if (disconnectBtn) disconnectBtn.style.display = '';
+        const registerBtn = document.getElementById('registerBtn');
+        if (registerBtn) registerBtn.disabled = false;
+        const badge = document.getElementById('registrationStatus')?.querySelector('.badge');
+        if (badge) badge.classList.remove('blurred');
+        const web3Ready = await initWeb3();
+        if (web3Ready) {
+            await checkRegistration(connectedAccount);
+        }
+    } else {
+        if (walletInput) walletInput.value = '';
+        if (connectBtn) connectBtn.style.display = '';
+        if (disconnectBtn) disconnectBtn.style.display = 'none';
+        showAlert('Please connect your MetaMask wallet to view your dashboard data.', 'warning');
+        const registerBtn = document.getElementById('registerBtn');
+        if (registerBtn) registerBtn.disabled = true;
+        const badge = document.getElementById('registrationStatus')?.querySelector('.badge');
+        // if (badge) badge.classList.add('blurred');
+        if (badge) {
+            badge.textContent = 'Connect Wallet';
+            badge.classList.remove('bg-success', 'bg-danger', 'bg-warning', 'bg-yellow-400');
+            badge.classList.add('bg-warning'); // or 'bg-yellow-400' for Tailwind
+        }
+        const totalSold = document.getElementById('totalSold');
+        if (totalSold) totalSold.textContent = 'N/A';
+        const totalEarnings = document.getElementById('totalEarnings');
+        if (totalEarnings) totalEarnings.textContent = 'N/A';
+        // If you have a currentConnections element, uncomment the next line
+        // const currentConnections = document.getElementById('currentConnections');
+        // if (currentConnections) currentConnections.textContent = 'N/A';
+    }
+}
+
+if (connectBtn) {
+    connectBtn.onclick = async function(e) {
+        e.preventDefault();
+        showLoading('Connecting to MetaMask...');
+        try {
+            if (!window.ethereum) {
+                showAlert('MetaMask is not installed or not accessible.', 'danger');
+                hideLoading();
+                return;
+            }
+            const accounts = await window.ethereum.request({ method: 'eth_requestAccounts' });
+            if (accounts.length === 0) {
+                connectedAccount = null;
+                showAlert('No wallet connected. Please connect in MetaMask.', 'warning');
+            } else {
+                connectedAccount = accounts[0];
+                showAlert('Wallet connected: ' + connectedAccount, 'success');
+            }
+            // --- Always initialize Web3 and contract before any contract call ---
+            const web3Ready = await initWeb3();
+            if (web3Ready) {
+                await updateUI();
+            }
+        } catch (error) {
+            showAlert('Could not connect to MetaMask: ' + error.message, 'danger');
+        } finally {
+            hideLoading();
+        }
+    };
+}
+
+if (disconnectBtn) {
+    disconnectBtn.onclick = function(e) {
+        e.preventDefault();
+        connectedAccount = null;
+        updateUI();
+        showAlert('Wallet disconnected', 'info');
+    };
+}
+
+// Add MetaMask event listeners
+if (window.ethereum) {
+    window.ethereum.on('accountsChanged', async function (accounts) {
+        connectedAccount = accounts[0] || null;
+        if (connectedAccount) {
+            showAlert('Wallet changed: ' + connectedAccount, 'info');
+        } else {
+            showAlert('No wallet connected.', 'warning');
+        }
+        await updateUI();
+    });
+
+    window.ethereum.on('chainChanged', function(chainId) {
+        window.location.reload();
+    });
+}
+
+// Initialize on page load
+(async function() {
+    if (window.ethereum) {
+        updateUI();
+    }
+})();
+
+function handleBlockchainError(error, operation) {
+    console.error(`${operation} error:`, error);
+    let errorMessage = 'An error occurred';
+    if (error.code === 4001) {
+        errorMessage = 'Transaction was rejected by user';
+    } else if (error.code === -32603) {
+        errorMessage = 'Transaction failed. Please check your gas settings';
+    } else if (error.message && error.message.includes('insufficient funds')) {
+        errorMessage = 'Insufficient funds for transaction';
+    } else if (error.message && error.message.includes('user denied')) {
+        errorMessage = 'Transaction was denied';
+    }
+    showAlert(`${operation} failed: ${errorMessage}`, 'danger');
+}
+
+function requireWallet() {
+    if (!connectedAccount) {
+        showAlert('Please connect the Wallet first', 'warning');
+        return false;
+    }
+    return true;
+}
+
+function requireRegistration() {
+    if (!isSellerRegistered) {
+        showAlert('Please register first', 'warning');
+        return false;
+    }
+    return true;
+}
+</script>
+{% endblock %} 
