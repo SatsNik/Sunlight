@@ -102,21 +102,21 @@ Node.js & npm
 MetaMask (with BSC Testnet configured)
 
 # Installation Steps
-**Clone the repository**
+**Clone the repository - **
 git clone https://github.com/SatsNik/Sunlight.git
 cd Sunlight
 
-**Install Python dependencies**
+**Install Python dependencies - **
 pip install -r requirements.txt
 
-**Add smart contract configuration**
+**Add smart contract configuration - **
 export CONTRACT_ADDRESS=0x5f40beeb31d78474a33775abe9bd85574c76dafb
 export CONTRACT_ABI from here : https://testnet.bscscan.com/address/0x5f40beeb31d78474a33775abe9bd85574c76dafb
 
-**Run database migrations**
+**Run database migrations - **
 python manage.py migrate
 
-**Start the development server**
+**Start the development server - **
 python manage.py runserver
 
 # 📜 Smart Contract Info
@@ -128,11 +128,7 @@ Contract Address: 0x5f40beeb31d78474a33775abe9bd85574c76dafb
 
 **Responsibilities:**
 
-Manage everything, users Blockchain Registration, Wallet Connection, Energy Buying, Energy Selling, Lising Available Seller, manageing history of transaction, Trades history, etc.
-
-Store user energy activity
-
-Facilitate secure and transparent energy purchases
+Manage everything, users Blockchain Registration, Wallet Connection, Energy Buying, Energy Selling, Lising Available Seller, manageing history of transaction, Trades history, stores user energy activity, facilitate secure and transparent energy purchases etc.
 
 # 🛣️ Roadmap
  Smart contract upgradeability
