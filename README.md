@@ -16,6 +16,7 @@ All energy transactions are securely recorded on-chain using **Web3 integration*
 ## 🔁 Architecture Flow
 
 ```mermaid
+
 graph TD
     A[User Registration] --> B{User Type}
     B -->|Producer| C[Seller Dashboard]
