@@ -12,7 +12,6 @@ Sunlight enables two types of users:
 
 All energy transactions are securely recorded on-chain using **Web3 integration** and **Solidity smart contracts** deployed on the **BSC Testnet**.
 
----
 
 ## 🔁 Architecture Flow
 
@@ -136,7 +135,7 @@ python manage.py runserver
 📜 Smart Contract Info
 Contract Address: 0x5f40beeb31d78474a33775abe9bd85574c76dafb
 
-Explorer: BSCScan - Testnet
+Explorer: https://testnet.bscscan.com/
 
 Deployed On: Binance Smart Chain Testnet
 
@@ -162,8 +161,8 @@ Facilitate secure and transparent energy purchases
 👨‍💻 Author
 Satyendra Shukla
 📧 Email: satyendrashukla381@gmail.com
-🐙 GitHub: @SatsNik
-🔗 LinkedIn: Satyendra Shukla
+🐙 GitHub: https://github.com/SatsNik
+🔗 LinkedIn: https://www.linkedin.com/in/satyendra-shukla-858561228
 
 🙏 Acknowledgments
 Binance Smart Chain Testnet
@@ -176,4 +175,4 @@ Django & DRF contributors
 🔗 Project Links
 📂 Repository: https://github.com/SatsNik/Sunlight
 
-🔍 Smart Contract: BSC Testnet Explorer
+🔍 Smart Contract: https://testnet.bscscan.com/address/0x5f40beeb31d78474a33775abe9bd85574c76dafb
