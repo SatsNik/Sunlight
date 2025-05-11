@@ -23,7 +23,7 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 SECRET_KEY = config('DJANGO_SECRET_KEY')
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True
+DEBUG = False
 
 ALLOWED_HOSTS = [
     'localhost',
@@ -42,10 +42,16 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
-    'accounts',
-    'dashboard',
-    'blockchain',
-    'home.apps.HomeConfig',
+    'Sunlight.accounts',
+    'Sunlight.dashboard',
+    'Sunlight.blockchain',
+    'Sunlight.home.apps.HomeConfig',
+
+    # 'accounts',
+    # 'dashboard',
+    # 'blockchain',
+    # 'home.apps.HomeConfig',
+    
     # 'Sunlight.accounts.apps.AccountsConfig',  
     # 'Sunlight.dashboard.apps.DashboardConfig',  
     # 'Sunlight.blockchain.apps.BlockchainConfig',  
