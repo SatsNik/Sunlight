@@ -142,10 +142,10 @@ Manage everything, users Blockchain Registration, Wallet Connection, Energy Buyi
  Deployment on Mainnet
 
 # 👨‍💻 Author
-Satyendra Shukla
-📧 Email: satyendrashukla381@gmail.com
-🐙 GitHub: https://github.com/SatsNik
-🔗 LinkedIn: https://www.linkedin.com/in/satyendra-shukla-858561228
+**Satyendra Shukla**  
+📧 Email: satyendrashukla381@gmail.com  
+🐙 GitHub: [DGithub](https://github.com/SatsNik)  
+🔗 LinkedIn: [Linkedin](https://www.linkedin.com/in/satyendra-shukla-858561228)
 
 # 🙏 Acknowledgments
 Binance Smart Chain Testnet
