@@ -69,7 +69,7 @@ MIDDLEWARE = [
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
 ]
 
-ROOT_URLCONF = 'Sunlight.Sunlight.urls'
+ROOT_URLCONF = 'Sunlight.urls'
 
 TEMPLATES = [
     {
