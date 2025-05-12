@@ -15,7 +15,7 @@ class UserProfile(models.Model):
         ('buyer', 'Buyer'),
         ('seller', 'Seller'),
     ]
-    user = models.OneToOneField(User, on_delete=models.CASCADE)
+    # user = models.OneToOneField(User, on_delete=models.CASCADE)
     role = models.CharField(max_length=10, choices=ROLE_CHOICES)
     aadhar = models.CharField(max_length=12, unique=True)
     email = models.EmailField(unique=True)
