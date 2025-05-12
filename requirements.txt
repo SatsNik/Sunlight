@@ -27,3 +27,5 @@ whitenoise>=6.5.0  # For static files
 
 # Development Tools
 django-debug-toolbar>=4.2.0  # Optional, for development
+
+   whitenoise>=6.5.0
