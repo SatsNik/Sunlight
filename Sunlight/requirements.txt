@@ -1,0 +1,31 @@
+# Django and Core Dependencies
+Django>=4.2.0
+django-crispy-forms>=2.0
+crispy-bootstrap5>=0.7
+python-decouple>=3.8
+django-environ>=0.11.2
+
+# Web3 and Blockchain
+web3>=6.0.0
+eth-account>=0.8.0
+eth-typing>=3.0.0
+eth-utils>=2.1.0
+
+# Database
+psycopg2-binary>=2.9.6  # For PostgreSQL support
+dj-database-url>=2.0.0  # For database URL configuration
+
+# Security
+django-cors-headers>=4.2.0
+django-ratelimit>=4.1.0
+
+# Utilities
+python-dotenv>=1.0.0
+requests>=2.31.0
+gunicorn>=21.2.0  # For production deployment
+whitenoise>=6.5.0  # For static files
+
+# Development Tools
+django-debug-toolbar>=4.2.0  # Optional, for development
+
+whitenoise>=6.5.0
