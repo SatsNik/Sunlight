@@ -3,6 +3,7 @@
 Sunlight is a decentralized application (DApp) that empowers individuals to **buy** and **sell** solar energy directly using blockchain technology. Built on the **Binance Smart Chain (BSC) Testnet**, it ensures transparency, decentralization, and trustless energy transactions. The platform is designed using the **Django MVT architecture** and integrates **smart contracts** for handling all on-chain logic.
 
 ---
+**Live on Render -**  https://sunlight-25.onrender.com/
 
 ## 🧭 Overview
 
