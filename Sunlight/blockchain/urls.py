@@ -1,7 +1,7 @@
 from django.urls import path
 from .views import get_available_sellers, get_my_buying_history, get_my_selling_history, register_buyer_onchain, register_seller_onchain, buy_energy, update_price, update_energy
 
-app_name = 'blockchain'
+# app_name = 'blockchain'
 urlpatterns = [
     path('available-sellers/', get_available_sellers, name='available_sellers'),
     path('my-buying-history/', get_my_buying_history, name='my_buying_history'),
